@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import Image from "next/image"
-import logo from '../assets/foodpanda-app-icon-square.png';
+import logo from '../assets/foodpanda-app-icon-square.png'
 
 // To render each item based
 // Properties : name, link (optional)
