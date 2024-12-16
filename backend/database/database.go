@@ -19,7 +19,6 @@ func NewDBClient() *DBClient {
 		panic(err.Error())
 	}
 
-
 	// ping our database to check if the credentials are valid
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database %v", err)
@@ -29,7 +28,6 @@ func NewDBClient() *DBClient {
 	newDB := &DBClient{DB: db}
 	return newDB
 }
-
 
 func (db *DBClient) DiscountStatus(res string) error {
 	status := models.Vendor{}
@@ -42,7 +40,7 @@ func (db *DBClient) DiscountStatus(res string) error {
 		return nil
 	}
 	return fmt.Errorf("Invalid status %v", res)
-
+}
 func (db *DBClient) GetMealFromVendor(vendorID string) ([]models.Meal, error) {
 	var meals []models.Meal
 
