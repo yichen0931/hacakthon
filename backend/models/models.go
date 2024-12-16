@@ -82,11 +82,3 @@ type VendorSessions struct {
 	VendorID      string
 	SessionExpiry string
 }
-
-type Role int
-
-const (
-	VENDOR Role = iota
-	CUSTOMER
-	RIDER
-)
