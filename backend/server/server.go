@@ -29,33 +29,12 @@ func (a *Apiserver) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", a.Login)
 }
 
-func (a *Apiserver) Login(res http.ResponseWriter, req *http.Request) {
-	if http.MethodPost == req.Method {
-		if req.Header.Get("Content-Type") == "application/json" {
-			// Create a map to hold the decoded data
-			loginDetails := make(map[string]string)
-
-			// Decode the JSON from the request body into the map
-			err := json.NewDecoder(req.Body).Decode(&loginDetails)
-			if err != nil {
-				fmt.Println("Error with JSON decoding of req body in login:", err)
-				return
-			}
-
-			fmt.Println("Username:", loginDetails["Username"])
-			fmt.Println("Password:", loginDetails["Password"])
-			fmt.Println("Vendor:", loginDetails["Role"])
-		}
-
-	}
-}
-
 func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 	//GET Method -- let the vendor see their “home” page (to edit which meal to go live for discount + quantity, etc)
 	if r.Method == http.MethodGet {
 		defer r.Body.Close()
 
-		cookie, err := r.Cookie("sessionID")
+		cookie, err := r.Cookie("SessionID")
 		if err != nil {
 			http.Error(w, "Session cookie not found", http.StatusUnauthorized)
 			return
@@ -63,7 +42,7 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 		sessionID := cookie.Value
 
 		var vendorID string
-		err = db.QueryRow("SELECT VendorID FROM VendorSessions WHERE SessionID = '%s' AND SessionExpiry > NOW()", sessionID).Scan(&vendorID)
+		err = a.DB.VendorCheckSession(sessionID)
 		if err != nil {
 			http.Error(w, "Invalid or expired session", http.StatusUnauthorized)
 			return

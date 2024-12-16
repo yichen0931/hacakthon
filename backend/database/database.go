@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"hackathon/models"
 	"log"
-	"net/http"
 )
 
 type DBClient struct {
@@ -30,45 +29,24 @@ func NewDBClient() *DBClient {
 	return newDB
 }
 
-//func (db *DBClient) DiscountStatus(res string) error {
-//	status := models.Vendor{}
-//	fmt.Println("inside", res)
-//	if res == "Launch" {
-//		status.IsDiscountOpen = true
-//		return nil
-//	} else if res == "End" {
-//		status.IsDiscountOpen = false
-//		return nil
-//	}
-//	return fmt.Errorf("Invalid status %v", res)
-//}
-
 func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, error) {
 	var vendorViews []models.VendorView
 
-	query := fmt.Sprintf("SELECT "+
-		"v.IsOpen,"+
-		" v.IsDiscountOpen AS IsDiscount,"+
-		" v.DiscountStart,"+
-		" v.DiscountEnd,"+
-		" m.MealID,"+
-		" m.MealName,"+
-		" m.Description,"+
-		" m.Availability,"+
-		" m.SustainabilityCreditScore"+
-		" FROM Vendor v"+
-		" LEFT JOIN Meal m ON v.VendorID = m.VendorID "+
-		"WHERE v.VendorID = ‘%s’;", vendorID)
+	//query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
+	//this is only for testing purpose (need to make sure that DiscountStart, DiscountEnd is NOT NULL)
+	query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = 'V002'")
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
-		log.Fatal("Failed to query database for vendor views", err.Error())
+		log.Fatal("Failed to get data from database", err.Error())
 		return nil, err
 	}
 
-	defer rows.Close()
+	//defer rows.Close()
 	for rows.Next() {
+		fmt.Println("inside")
 		var vendorView models.VendorView
+		fmt.Println("scanning")
 		err := rows.Scan(
 			&vendorView.IsOpen,
 			&vendorView.IsDiscount,
@@ -80,13 +58,15 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 			&vendorView.Availability,
 			&vendorView.SustainabilityCreditScore,
 		)
+		fmt.Println("vendor view", vendorView)
 		if err != nil {
 			log.Fatalln("Failed to scan row for vendor views", err.Error())
 			return nil, err
 		}
 		vendorViews = append(vendorViews, vendorView)
-		return vendorViews, nil
+		fmt.Println(vendorViews)
 	}
+	return vendorViews, nil
 }
 
 func (db *DBClient) GetMealFromVendor(vendorID string) ([]models.Meal, error) {
