@@ -15,7 +15,8 @@ CREATE TABLE Vendor (
                         IsOpen boolean,
                         IsDiscountOpen boolean NOT NULL DEFAULT FALSE,
                         DiscountStart datetime,
-                        DiscountEnd datetime
+                        DiscountEnd datetime,
+                        Password varchar(50) NOT NULL
 );
 
 CREATE TABLE Meal (
@@ -40,7 +41,8 @@ CREATE TABLE Customer (
                           CustomerID varchar(50) NOT NULL PRIMARY KEY,
                           CustomerName varchar(50) NOT NULL ,
                           Address varchar(50) NOT NULL,
-                          AccumulatedSustainabilityCreditScore INT DEFAULT 0
+                          AccumulatedSustainabilityCreditScore INT DEFAULT 0,
+                          Password varchar(50) NOT NULL
 );
 
 CREATE TABLE Discount (
@@ -71,28 +73,26 @@ CREATE TABLE OrderDetail (
                              FOREIGN KEY (MealID) REFERENCES Meal(MealID)
 );
 
-CREATE TABLE Sessions (
+CREATE TABLE CustomerSessions (
                           SessionID varchar(50) PRIMARY KEY,
-                          UserID varchar(50) NOT NULL,
+                          CustomerID varchar(50) NOT NULL,
                           SessionExpiry datetime,
-                          FOREIGN KEY (UserID) REFERENCES Vendor(VendorID),
-                          FOREIGN KEY (UserID) REFERENCES Customer(CustomerID)
+                          FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
 );
 
-CREATE TABLE Users (
-                       UserID varchar(50) NOT NULL PRIMARY KEY,
-                       UserName varchar(50) NOT NULL,
-                       Password varchar(50),
-                       Role ENUM('VENDOR','CUSTOMER','RIDER') NOT NULL,
-                       FOREIGN KEY (UserID) REFERENCES Sessions(UserID)
+CREATE TABLE VendorSessions (
+                                  SessionID varchar(50) PRIMARY KEY,
+                                  VendorID varchar(50) NOT NULL,
+                                  SessionExpiry datetime,
+                                  FOREIGN KEY (VendorID) REFERENCES Vendor(VendorID)
 );
 
 -- Insert dummy data into the Vendor table
-INSERT INTO Vendor (VendorID, VendorName, Address, IsOpen, IsDiscountOpen, DiscountStart, DiscountEnd)
+INSERT INTO Vendor (VendorID, VendorName, Address, IsOpen, IsDiscountOpen, DiscountStart, DiscountEnd, Password)
 VALUES
-    ('V001', 'Healthy Bites', '123 Green Street', TRUE, FALSE, NULL, NULL),
-    ('V002', 'Spice Paradise', '456 Flavor Ave', TRUE, TRUE, '2024-12-20 10:00:00', '2024-12-20 18:00:00'),
-    ('V003', 'Dessert Haven', '789 Sweet Lane', FALSE, FALSE, NULL, NULL);
+    ('V001', 'Healthy Bites', '123 Green Street', TRUE, FALSE, NULL, NULL, 'password123'),
+    ('V002', 'Spice Paradise', '456 Flavor Ave', TRUE, TRUE, '2024-12-20 10:00:00', '2024-12-20 18:00:00','password123'),
+    ('V003', 'Dessert Haven', '789 Sweet Lane', FALSE, FALSE, NULL, NULL,'password123');
 
 -- Insert dummy data into the Meal table for each vendor
 INSERT INTO Meal (MealID, VendorID, MealName, Description, Price, Availability, SustainabilityCreditScore)
@@ -110,3 +110,12 @@ VALUES
 ('M008', 'V003', 'Vanilla Ice Cream', 'Classic vanilla ice cream scoop', 4.00, TRUE, 60),
 ('M009', 'V003', 'Apple Pie', 'Warm apple pie with cinnamon', 5.00, TRUE, 50),
 ('M010', 'V003', 'Cheesecake', 'Creamy New York-style cheesecake', 6.00, TRUE, 60);
+
+
+INSERT INTO Customer (CustomerID, CustomerName, Address, Password)
+VALUES
+    ('C001','Adam','Jurong West Blk 45', 'password123'),
+    ('C002','Sandy','Jurong West Blk 20', 'password123'),
+    ('C003','Bert','Jurong West Blk 21', 'password123');
+
+
