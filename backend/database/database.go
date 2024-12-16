@@ -29,10 +29,12 @@ func NewDBClient() *DBClient {
 	return newDB
 }
 
+// View the (home) page for Vendor once they are logged in
 func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, error) {
 	var vendorViews []models.VendorView
 
 	//query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
+
 	//this is only for testing purpose (need to make sure that DiscountStart, DiscountEnd is NOT NULL)
 	query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = 'V002'")
 
@@ -42,7 +44,7 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 		return nil, err
 	}
 
-	//defer rows.Close()
+	defer rows.Close()
 	for rows.Next() {
 		fmt.Println("inside")
 		var vendorView models.VendorView
@@ -67,6 +69,22 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 		fmt.Println(vendorViews)
 	}
 	return vendorViews, nil
+}
+
+// Inserting the meals discounts/prices and quantity on Vendor side
+func (db *DBClient) VendorSetDiscount(updatedDiscount *models.VendorSetDiscount) error {
+
+	query := fmt.Sprintf("INSERT INTO Discount (MealID, DiscountedPrice, Quantity) VALUES ('%s', '%.2f', '%d')", updatedDiscount.MealID, updatedDiscount.DiscountedPrice, updatedDiscount.Quantity)
+
+	_, err := db.DB.Exec(query)
+	if err != nil {
+		log.Fatalf("Failed to insert Discounted meal item: %s", err.Error())
+		return err
+	}
+
+	fmt.Println("Successfully inserted Discounted meal item")
+	return nil
+
 }
 
 func (db *DBClient) GetMealFromVendor(vendorID string) ([]models.Meal, error) {
