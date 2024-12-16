@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import Menu from './components/Menu'
 import Sidebar from '@/components/Sidebar'
 import OperatingTime from '@/components/OperatingTime'
+import LaunchButton from '@/components/LaunchButton'
+import Header from '@/components/Header'
 
 export default function Discounts() {
 
@@ -67,10 +69,13 @@ export default function Discounts() {
 
     return (
     <div className="flex">
-        <Sidebar current="Discounts"/>
+        <Sidebar current="Discounts" indicator="on"/>
         <div className="flex-1 lg:ml-[300px] p-10 overflow-y-auto">
+            <Header name="Discount" indicator="on"/>
             <OperatingTime startTime="21:00" endTime="21:30"/>
             <Menu menuItems={menuItems}/>
+            <LaunchButton/>
+            
         </div>
     </div>
     )
