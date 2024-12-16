@@ -18,7 +18,7 @@ subgraph c0["Customer"]
 	c4["Set discounted quantity"]
 	c5["See all meal items"]
 end
-
+    classDef disk fill:#f96,stroke:#333,stroke-width:2,rx:50,ry:50;
     customer["Customer"]
     order["Order"]
 	vendor["Vendor"]
@@ -26,17 +26,17 @@ end
 	discount["Discount"]
     ordermeals["Ordermeals"]
     
-	customer@{ shape: disk}
-    order@{ shape: disk}
-    vendor@{ shape: disk}
-	meal@{shape: disk}
-	discount@{shape: disk}
-    ordermeals@{ shape: disk}
+    class customer, disk
+    class order, disk
+    class vendor, disk
+    class meal, disk
+    class discount, disk
+    class ordermeals, disk
 
 
 v1 --> vv1["PUT"] --> vendor
 v2 --> vv2["PUT"] --> vendor
-v3 --> vv3[" vvST"] --> discount
+v3 --> vv3["POST"] --> discount
 v4 --> vv4["PUT"] --> discount
 v5 --> vv5["GET"] --> meal
 v6 --> vv6["GET"] --> vendor
