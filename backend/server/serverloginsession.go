@@ -58,7 +58,7 @@ func (a *Apiserver) Login(res http.ResponseWriter, req *http.Request) {
 					Domain:  "localhost", //only this domain
 				}
 				http.SetCookie(res, sessionCookie)
-				res.Write([]byte(`{"authenticated": true, "UserID": "` + vendorID + `""}`))
+				res.Write([]byte(`{"authenticated": true, "Role":"Vendor" , "UserID": "` + vendorID + `""}`))
 				//http.Redirect(res, req, "/vendor/discount", http.StatusSeeOther)
 			case "Customer":
 				customerID := loginDetails["UserID"]
@@ -89,7 +89,7 @@ func (a *Apiserver) Login(res http.ResponseWriter, req *http.Request) {
 					Domain:  "localhost", //only this domain
 				}
 				http.SetCookie(res, sessionCookie)
-				res.Write([]byte(`{"authenticated": true, "UserID": "` + customerID + `""}`))
+				res.Write([]byte(`{"authenticated": true, "Role":"Customer", "UserID": "` + customerID + `""}`))
 				//http.Redirect(res, req, "/customer/discount", http.StatusSeeOther)
 			default:
 				fmt.Println("Invalid role type")
