@@ -1,3 +1,13 @@
+CREATE USER 'user'@'%' IDENTIFIED
+WITH mysql_native_password BY 'strongpassword' ;
+
+GRANT ALL PRIVILEGES ON *.* TO 'user'@'%' ;
+
+FLUSH PRIVILEGES;
+
+create database dealsDB;
+use dealsDB;
+
 CREATE TABLE Meal (
                       MealID varchar(50) PRIMARY KEY,
                       VendorID varchar(50),
