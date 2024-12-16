@@ -1,15 +1,5 @@
 package models
 
-type Meal struct {
-	MealID                    string
-	VendorID                  string
-	MealName                  string
-	Description               string
-	Price                     int64
-	Availability              bool
-	SustainabilityCreditScore int
-}
-
 type Vendor struct {
 	VendorID       string
 	VendorName     string
@@ -18,6 +8,16 @@ type Vendor struct {
 	IsDiscountOpen bool
 	DiscountStart  int64
 	DiscountEnd    int64
+}
+
+type Meal struct {
+	MealID                    string
+	VendorID                  string
+	MealName                  string
+	Description               string
+	Price                     int64
+	Availability              bool
+	SustainabilityCreditScore int
 }
 
 type Rider struct {
@@ -52,7 +52,7 @@ const (
 	DELIVERED
 )
 
-type Order struct {
+type Orders struct {
 	OrderID         string
 	CustomerID      string
 	RiderID         string
@@ -69,6 +69,12 @@ type OrderDetail struct {
 	MealPrice int64
 }
 
+type Sessions struct {
+	SessionID     string
+	UserID        string
+	SessionExpiry int64
+}
+
 type Role int
 
 const (
@@ -82,10 +88,4 @@ type Users struct {
 	UserName string
 	Password string
 	Role     Role
-}
-
-type Sessions struct {
-	SessionID     string
-	UserID        string
-	SessionExpiry int64
 }
