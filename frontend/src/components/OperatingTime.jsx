@@ -2,32 +2,8 @@ import { useState, useEffect } from 'react'
 
 
 function OperatingTime(props) {
-    const [formData, setFormData] = useState({startTime:'',endTime:''})
-    let fetchurl = 'https://localhost:5001/vendor/'+ props.vid
-    let posturl = 'https://localhost:5001/vendor/'+ props.vid
-    posturl = 'https://pokeapi.co/api/v2/pokemon/ditto'
-
-    // get start and end time when operating time is mounted
-    async function fetchVendor() {
-        try {
-            const res = await fetch(fetchurl, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-            if (!res.ok) {
-                throw new Error('Network response was not ok')
-            }
-            const data = await res.json()
-            setFormData({startTime:data.StartTime,endTime:data.EndTime})
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    useEffect(() => {
-        fetchVendor()
-    },[])
+    const [formData, setFormData] = useState({StartTime:props.startTime,EndTime:props.endTime})
+    let posturl = 'https://localhost:5001/vendor/discount/'
 
     // update formData state when there is a change in form data
     const handleChange = (e) => {
@@ -36,7 +12,6 @@ function OperatingTime(props) {
             ...prevData,
             [name]: value
         }))
-
     }
 
     async function PostTime() {
@@ -67,9 +42,9 @@ function OperatingTime(props) {
         <div className="flex border-2 border-solid w-[80%] h-[50px] rounded-2xl items-center">
             <form id="operating-time">
                 <span className="p-7">Start Time: </span>
-                <input type="time" className="w-[110px] border-b border-solid" value={formData.startTime} onChange={handleChange} name="startTime" id="startTime"/>
+                <input type="time" className="w-[110px] border-b border-solid" value={formData.StartTime} onChange={handleChange} name="StartTime" id="StartTime"/>
                 <span className="p-7">End Time: </span>
-                <input type="time" className="w-[110px] border-b border-solid" value={formData.endTime} onChange={handleChange} name="endTime" id="endTime"/>
+                <input type="time" className="w-[110px] border-b border-solid" value={formData.EndTime} onChange={handleChange} name="EndTime" id="EndTime"/>
             </form>
         </div>
         </>
