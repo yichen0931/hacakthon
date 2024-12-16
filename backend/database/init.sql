@@ -86,3 +86,27 @@ CREATE TABLE Sessions (
                           FOREIGN KEY (UserID) REFERENCES Vendor(VendorID),
                           FOREIGN KEY (UserID) REFERENCES Customer(CustomerID)
 );
+
+-- Insert dummy data into the Vendor table
+INSERT INTO Vendor (VendorID, VendorName, Address, IsOpen, IsDiscountOpen, DiscountStart, DiscountEnd)
+VALUES
+    ('V001', 'Healthy Bites', '123 Green Street', TRUE, FALSE, NULL, NULL),
+    ('V002', 'Spice Paradise', '456 Flavor Ave', TRUE, TRUE, '2024-12-20 10:00:00', '2024-12-20 18:00:00'),
+    ('V003', 'Dessert Haven', '789 Sweet Lane', FALSE, FALSE, NULL, NULL);
+
+-- Insert dummy data into the Meal table for each vendor
+INSERT INTO Meal (MealID, VendorID, MealName, Description, Price, Availability, SustainabilityCreditScore)
+VALUES
+-- Meals for Vendor V001
+('M001', 'V001', 'Quinoa Salad', 'Healthy salad with quinoa, veggies, and dressing', 8.99, TRUE, 85),
+('M002', 'V001', 'Grilled Chicken Wrap', 'Wrap with grilled chicken and veggies', 7.50, TRUE, 75),
+('M003', 'V001', 'Vegetable Soup', 'Warm soup with fresh vegetables', 5.99, TRUE, 80),
+-- Meals for Vendor V002
+('M004', 'V002', 'Spicy Chicken Curry', 'Rich and spicy chicken curry', 12.50, TRUE, 70),
+('M005', 'V002', 'Vegetable Biryani', 'Aromatic rice with mixed vegetables and spices', 10.00, TRUE, 78),
+('M006', 'V002', 'Paneer Butter Masala', 'Creamy Indian curry with paneer cubes', 11.00, TRUE, 65),
+-- Meals for Vendor V003
+('M007', 'V003', 'Chocolate Lava Cake', 'Molten chocolate dessert', 6.50, FALSE, 55),
+('M008', 'V003', 'Vanilla Ice Cream', 'Classic vanilla ice cream scoop', 4.00, TRUE, 60),
+('M009', 'V003', 'Apple Pie', 'Warm apple pie with cinnamon', 5.00, TRUE, 50),
+('M010', 'V003', 'Cheesecake', 'Creamy New York-style cheesecake', 6.00, TRUE, 60);
