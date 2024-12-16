@@ -19,7 +19,7 @@ func NewDBClient() *DBClient {
 	}
 
 	defer db.Close() // defer the close
-	
+
 	// ping our database to check if the credentials are valid
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database %v", err)

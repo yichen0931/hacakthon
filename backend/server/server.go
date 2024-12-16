@@ -19,7 +19,7 @@ func NewApiserver(db *database.DBClient) *Apiserver {
 }
 
 func (a *Apiserver) RegisterRoutes(router *mux.Router) {
-	router.HandleFunc("/panda/v1/", a.Home) // handler "home"
+	router.HandleFunc("/", a.Home) // handler "home"
 	router.HandleFunc("/vendor/discount", a.VendorDiscount)
 	router.HandleFunc("/customer/discount", a.GetCustomerDiscount)                 //show vendor
 	router.HandleFunc("/customer/discount/{vid}", a.GetCustomerDiscountIndividual) //show each vendor meals

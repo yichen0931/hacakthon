@@ -34,7 +34,7 @@ end
     ordermeals@{ shape: disk}
 
 
-v1 --> vv1["vvUT"] --> vendor
+v1 --> vv1["PUT"] --> vendor
 v2 --> vv2["PUT"] --> vendor
 v3 --> vv3[" vvST"] --> discount
 v4 --> vv4["PUT"] --> discount
