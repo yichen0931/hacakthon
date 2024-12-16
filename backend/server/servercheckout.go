@@ -22,10 +22,15 @@ func (a *Apiserver) Checkout(res http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodPost {
 		checkoutDetails := make(map[string]interface{})
 		if req.Header.Get("Content-Type") == "application/json" { //Get data passed from client in form format
+			res.Header().Set("Content-Type", "application/json")
 			err := json.NewDecoder(req.Body).Decode(&checkoutDetails)
 			if err != nil {
 				fmt.Println("Error with json decoding of req body in login", err)
+				res.WriteHeader(http.StatusInternalServerError)
+				res.Write([]byte(`{"orderInserted": false, "OrderID": ""}`))
+				return
 			}
+
 			//ORDER AND ORDER DETAIL
 			newOrderID := uuid.NewString()
 			orderTime := time.Now()
@@ -50,6 +55,8 @@ func (a *Apiserver) Checkout(res http.ResponseWriter, req *http.Request) {
 			dberr := a.DB.InsertOrder(order)
 			if dberr != nil {
 				fmt.Println("Error with inserting order in db", dberr)
+				res.WriteHeader(http.StatusInternalServerError)
+				res.Write([]byte(`{"orderInserted": false, "OrderID": ""}`))
 				return
 			}
 
@@ -57,7 +64,6 @@ func (a *Apiserver) Checkout(res http.ResponseWriter, req *http.Request) {
 			a.DB.InsertOrderDetail(meals)
 
 			//return headers
-			res.Header().Set("Content-Type", "application/json")
 			res.WriteHeader(http.StatusCreated)
 			res.Write([]byte(`{"orderInserted": true, "OrderID": "` + newOrderID + `"}`))
 		}
