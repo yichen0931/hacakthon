@@ -8,7 +8,9 @@ const MenuCard = ({mealId, mealName, mealPrice}) => {
     setQuantity(quantity + 1); 
   }
   const decrement = () => {
-    setQuantity(quantity - 1);
+    if (quantity > 0) {
+      setQuantity(quantity - 1);
+    }
   }
 
   const handleQuantityChange = (e) => {
