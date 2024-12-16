@@ -79,7 +79,7 @@ const MenuCard = ({mealId, mealName, mealPrice}) => {
                       placeholder="0"
                       onChange={handleQuantityChange}
                       value={quantity}
-                      className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+                      className="block min-w-0 w-10 grow py-1.5 pr-3 text-center text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
                     />
                   </div>
                 </div>
