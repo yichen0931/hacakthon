@@ -8,6 +8,16 @@ FLUSH PRIVILEGES;
 create database dealsDB;
 use dealsDB;
 
+CREATE TABLE Vendor (
+                        VendorID varchar(50) NOT NULL PRIMARY KEY,
+                        VendorName varchar(50) NOT NULL,
+                        Address varchar(50) NOT NULL,
+                        IsOpen boolean,
+                        IsDiscountOpen boolean NOT NULL DEFAULT FALSE,
+                        DiscountStart datetime,
+                        DiscountEnd datetime
+);
+
 CREATE TABLE Meal (
                       MealID varchar(50) PRIMARY KEY,
                       VendorID varchar(50),
@@ -17,16 +27,6 @@ CREATE TABLE Meal (
                       Availability boolean,
                       SustainabilityCreditScore int,
                       FOREIGN KEY (VendorID) REFERENCES Vendor(VendorID)
-);
-
-CREATE TABLE Vendor (
-                        VendorID varchar(50) NOT NULL PRIMARY KEY,
-                        VendorName varchar(50) NOT NULL,
-                        Address varchar(50) NOT NULL,
-                        IsOpen boolean,
-                        IsDiscountOpen boolean NOT NULL DEFAULT FALSE,
-                        DiscountStart datetime,
-                        DiscountEnd datetime
 );
 
 CREATE TABLE Rider (
