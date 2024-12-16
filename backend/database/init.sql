@@ -110,3 +110,14 @@ VALUES
 ('M008', 'V003', 'Vanilla Ice Cream', 'Classic vanilla ice cream scoop', 4.00, TRUE, 60),
 ('M009', 'V003', 'Apple Pie', 'Warm apple pie with cinnamon', 5.00, TRUE, 50),
 ('M010', 'V003', 'Cheesecake', 'Creamy New York-style cheesecake', 6.00, TRUE, 60);
+
+
+INSERT INTO Users (UserID, UserName, Password, Role)
+VALUES
+    ('V01','vendor1','password123','VENDOR'),
+    ('V02','vendor2','password123','VENDOR'),
+    ('U01','user1','password123','CUSTOMER'),
+    ('U02','user2','password123','CUSTOMER'),
+    ('U03','user3','password123','CUSTOMER'),
+    ('R01','rider1','password123','RIDER')
+

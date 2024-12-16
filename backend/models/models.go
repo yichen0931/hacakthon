@@ -6,8 +6,8 @@ type Vendor struct {
 	Address        string
 	IsOpen         bool
 	IsDiscountOpen bool
-	DiscountStart  int64
-	DiscountEnd    int64
+	DiscountStart  string
+	DiscountEnd    string
 }
 
 type Meal struct {
@@ -15,7 +15,7 @@ type Meal struct {
 	VendorID                  string
 	MealName                  string
 	Description               string
-	Price                     int64
+	Price                     float64
 	Availability              bool
 	SustainabilityCreditScore int
 }
@@ -36,7 +36,7 @@ type Customer struct {
 
 type Discount struct {
 	MealID        string
-	DiscountPRice int64
+	DiscountPrice float64
 	Quantity      int
 }
 
@@ -57,8 +57,8 @@ type Orders struct {
 	CustomerID      string
 	RiderID         string
 	OrderStatus     OrderStatus
-	OrderEnd        int64
-	Total           int64
+	OrderEnd        string
+	Total           float64
 	DeliveryAddress string
 }
 
@@ -66,7 +66,7 @@ type OrderDetail struct {
 	OrderID   string
 	MealID    string
 	MealQty   int
-	MealPrice int64
+	MealPrice float64
 }
 
 type Sessions struct {
