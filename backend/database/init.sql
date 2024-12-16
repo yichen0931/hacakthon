@@ -33,7 +33,7 @@ CREATE TABLE Rider (
                        RiderID varchar(50) NOT NULL PRIMARY KEY,
                        RiderName varchar(50) NOT NULL,
                        VehiclePlate varchar(50) NOT NULL,
-                       Availability boolean NOT NULL DEAFULT FALSE
+                       Availability boolean NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE Customer (
@@ -54,8 +54,8 @@ CREATE TABLE Order (
                        OrderID varchar(50) NOT NULL PRIMARY KEY,
                        CustomerID varchar(50) NOT NULL,
                        RiderID varchar(50) NOT NULL,
-                       OrderStatus varchar(20) ENUM('CART','PENDING','ORDERRECIVEVD','GROUPORDER','PREPARING','PICKED','DELIVERED',)
-                         OrderEnd datetime,
+                       OrderStatus varchar(20) ENUM('CART','PENDING','ORDERRECIVEVD','GROUPORDER','PREPARING','PICKED','DELIVERED',),
+                       OrderEnd datetime,
                        Total float,
                        DeliveryAddress varchar(100) NOT NULL,
                        FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
@@ -71,20 +71,20 @@ CREATE TABLE OrderDetail (
                              FOREIGN KEY (MealID) REFERENCES Meal(MealID)
 );
 
-CREATE TABLE Users (
-                       UserID varchar(50) NOT NULL PRIMARY KEY,
-                       UserName varchar(50) NOT NULL,
-                       Password varchar(50),
-                       Role varchar(10) NOT NULL ENUM('VENDOR','CUSTOMER','RIDER')
-                         FOREIGN KEY (UserID) REFERENCES Sessions(UserID)
-);
-
 CREATE TABLE Sessions (
                           SessionID varchar(50) PRIMARY KEY,
                           UserID varchar(50) NOT NULL,
                           SessionExpiry datetime,
                           FOREIGN KEY (UserID) REFERENCES Vendor(VendorID),
                           FOREIGN KEY (UserID) REFERENCES Customer(CustomerID)
+);
+
+CREATE TABLE Users (
+                       UserID varchar(50) NOT NULL PRIMARY KEY,
+                       UserName varchar(50) NOT NULL,
+                       Password varchar(50),
+                       Role varchar(10) NOT NULL ENUM('VENDOR','CUSTOMER','RIDER')
+                         FOREIGN KEY (UserID) REFERENCES Sessions(UserID)
 );
 
 -- Insert dummy data into the Vendor table
