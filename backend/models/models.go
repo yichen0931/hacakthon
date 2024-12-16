@@ -8,6 +8,7 @@ type Vendor struct {
 	IsDiscountOpen bool
 	DiscountStart  string
 	DiscountEnd    string
+	Password       string
 }
 
 type Meal struct {
@@ -32,6 +33,7 @@ type Customer struct {
 	CustomerName                         string
 	Address                              string
 	AccumulatedSustainabilityCreditScore int
+	Password                             string
 }
 
 type Discount struct {
@@ -69,10 +71,16 @@ type OrderDetail struct {
 	MealPrice float64
 }
 
-type Sessions struct {
+type CustomerSessions struct {
 	SessionID     string
-	UserID        string
-	SessionExpiry int64
+	CustomerID    string
+	SessionExpiry string
+}
+
+type VendorSessions struct {
+	SessionID     string
+	VendorID      string
+	SessionExpiry string
 }
 
 type Role int
@@ -82,10 +90,3 @@ const (
 	CUSTOMER
 	RIDER
 )
-
-type Users struct {
-	UserID   string
-	UserName string
-	Password string
-	Role     Role
-}
