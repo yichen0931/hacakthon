@@ -1,11 +1,13 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"hackathon/database"
 	"net/http"
+	"strings"
 )
 
 type Apiserver struct {
@@ -34,26 +36,45 @@ func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) 
 
 }
 func (a *Apiserver) GetCustomerDiscountIndividual(res http.ResponseWriter, req *http.Request) {
+	//check discount start and discount end. if discount has ended, then we delete that meal from the database.
 	if req.Method == http.MethodGet { //GET ALL Meals from Vendors
-		//getVendorID := req.URL.Path
-		//
-		//parts := strings.Split(getVendorID, "/")
-		//var vendorID string
+		//fetch the vendor id
+		getVendorID := req.URL.Path
+		parts := strings.Split(getVendorID, "/")
+		var vendorID string
 
+		if len(parts) > 1 {
+			vendorID = parts[len(parts)-1]
+		} else {
+			return
+		}
+
+		//get the all meals from that vendor
+		meals, err := a.DB.GetMealFromVendor(vendorID)
+		if err != nil {
+			res.WriteHeader(http.StatusNotFound)
+			res.Write([]byte(`{"error": "No meals available in vendor"}`))
+			return
+		}
+
+		//get only meals that are discounted
+		discountedMeals, dberr := a.DB.GetDiscountedMealsFromVendor(meals)
+		if dberr != nil {
+			fmt.Println(dberr)
+			res.WriteHeader(http.StatusNotFound)
+			res.Write([]byte(`{"error": "No discounted meals found"}`))
+			return
+		}
+
+		jsonerr := json.NewEncoder(res).Encode(discountedMeals)
+		if jsonerr != nil {
+			fmt.Println(jsonerr)
+			res.WriteHeader(http.StatusNotFound)
+			res.Write([]byte(`{"error": "Error with json conversion. Discounted meals not found"}`))
+			return
+		}
+		res.WriteHeader(http.StatusOK)
 	}
-	//getVendor := r.URL.Path
-	//urlPath := req.URL.Path //// Get the full URL path. attendance/<id>
-	//
-	//parts := strings.Split(urlPath, "/") // Split the URL path by "/"
-	//var attendanceID string
-	//
-	//if len(parts) > 1 { // Assuming the ID is the last part of the URL path
-	//	attendanceID = parts[len(parts)-1]
-	//} else {
-	//	logrus.Info("Attendance ID not provided")
-	//	http.Error(res, "Attendance ID not provided", http.StatusBadRequest)
-	//	return
-	//}
 }
 
 func (a *Apiserver) Checkout(w http.ResponseWriter, r *http.Request) {
