@@ -8,6 +8,7 @@ subgraph v0["Vendor"]
     v3["Set discounted price"]
     v4["Set discounted quantity"]
     v5["See all meal items"]
+    v6["See if discount is active"]
 end
 
 subgraph c0["Customer"]
@@ -33,15 +34,16 @@ end
     ordermeals@{ shape: disk}
 
 
-v1 --> p1["PUT"] --> vendor
-v2 --> p2["PUT"] --> vendor
-v3 --> p3["POST"] --> discount
-v4 --> p4["PUT"] --> discount
-v5 --> p5["GET"] --> meal
+v1 --> vv1["vvUT"] --> vendor
+v2 --> vv2["PUT"] --> vendor
+v3 --> vv3[" vvST"] --> discount
+v4 --> vv4["PUT"] --> discount
+v5 --> vv5["GET"] --> meal
+v6 --> vv6["GET"] --> vendor
 
-c1 --> p6["GET"] --> vendor
-c2 --> p7["GET"] --> discount
-c3 --> p8["POST"] --> order
-c3 --> p9["POST"] --> ordermeals
+c1 --> cc1["GET"] --> vendor
+c2 --> cc2["GET"] --> discount
+c3 --> cc3["POST"] --> order
+c3 --> cc4["POST"] --> ordermeals
 
 ```
