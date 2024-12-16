@@ -65,7 +65,7 @@ CREATE TABLE Orders (
 );
 
 CREATE TABLE OrderDetail (
-                             OrderID varchar(50) NOT NULL PRIMARY KEY,
+                             OrderID varchar(50) NOT NULL,
                              MealID varchar(50) NOT NULL,
                              MealQty INT,
                              MealPrice FLOAT,
@@ -117,5 +117,11 @@ VALUES
     ('C001','Adam','Jurong West Blk 45', 'password123'),
     ('C002','Sandy','Jurong West Blk 20', 'password123'),
     ('C003','Bert','Jurong West Blk 21', 'password123');
+
+INSERT INTO Rider (RiderID, RiderName, VehiclePlate, Availability)
+VALUES
+    ('R001','Rider1','SBS123',true),
+    ('R002','Rider2','SHY3Y3Y', false),
+    ('R003','Rider3','JYJ333',true);
 
 
