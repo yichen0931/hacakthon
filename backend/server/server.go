@@ -145,38 +145,6 @@ func (a *Apiserver) GetCustomerDiscountIndividual(res http.ResponseWriter, req *
 	}
 }
 
-func (a *Apiserver) Checkout(res http.ResponseWriter, req *http.Request) {
-	if req.Method == http.MethodPost {
-		checkoutDetails := make(map[string]interface{})
-		if req.Header.Get("Content-Type") == "application/json" { //Get data passed from client in form format
-			err := json.NewDecoder(req.Body).Decode(&checkoutDetails)
-			if err != nil {
-				fmt.Println("Error with json decoding of req body in login")
-			}
-
-			//fmt.Println(checkoutDetails["data"])
-
-			//ordersMake := models.Orders{OrderID: uuid.NewString(), }
-
-			//data := checkoutDetails["data"].(map[string]interface{})
-			//order := data["order"].(map[string]interface{})
-			//items := order["items"].([]interface{}) // We expect items to be an array
-			//
-			//// Loop through the items to access "itemID"
-			//for _, item := range items {
-			//	itemMap := item.(map[string]interface{})  // type assertion to map for each item
-			//	itemID := itemMap["itemID"].(string)      // Access itemID as a string
-			//	quantity := itemMap["quantity"].(float64) // Access quantity as a float64 (JSON numbers are decoded as float64)
-			//
-			//	// Print the item details
-			//	fmt.Println("Item ID:", itemID)
-			//	fmt.Println("Quantity:", quantity)
-			//}
-		}
-
-	}
-}
-
 //func (a *Apiserver) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 //	// iterate all people
 //

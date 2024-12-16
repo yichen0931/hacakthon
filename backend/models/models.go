@@ -42,21 +42,21 @@ type Discount struct {
 
 type OrderStatus int
 
-const (
-	CART OrderStatus = iota
-	PENDING
-	ORDERRECEIVED
-	GROUPORDER
-	PREPARING
-	PICKED
-	DELIVERED
-)
+//const (
+//	CART OrderStatus = iota
+//	PENDING
+//	ORDERRECEIVED
+//	GROUPORDER
+//	PREPARING
+//	PICKED
+//	DELIVERED
+//)
 
 type Orders struct {
 	OrderID         string
 	CustomerID      string
 	RiderID         string
-	OrderStatus     OrderStatus
+	OrderStatus     string
 	OrderEnd        string
 	Total           float64
 	DeliveryAddress string

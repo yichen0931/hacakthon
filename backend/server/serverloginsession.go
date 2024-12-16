@@ -108,6 +108,7 @@ func (a *Apiserver) CheckSessionExistVendor(req *http.Request) (string, bool) {
 	reqCookie, err := req.Cookie("vendorSessionCookie")
 	if err != nil {
 		fmt.Println(err)
+		return "", false
 	}
 
 	vendorSessionCookie := reqCookie.Value
@@ -124,13 +125,14 @@ func (a *Apiserver) CheckSessionExistCustomer(req *http.Request) (string, bool) 
 	reqCookie, err := req.Cookie("customerSessionCookie")
 	if err != nil {
 		fmt.Println(err)
+		return "", false
 	}
 
-	vendorSessionCookie := reqCookie.Value
+	customerSessionCookie := reqCookie.Value
 
-	vendorID := a.DB.CheckSessionExistVendor(vendorSessionCookie)
-	if vendorID == "" {
+	customerID := a.DB.CheckSessionExistCustomer(customerSessionCookie)
+	if customerID == "" {
 		return "", false //session doesnt exist
 	}
-	return vendorID, true
+	return customerID, true
 }
