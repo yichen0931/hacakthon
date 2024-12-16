@@ -12,7 +12,7 @@ type DBClient struct {
 }
 
 func NewDBClient() *DBClient {
-	dsn := "user:strongpassword@tcp(127.0.0.1:3306)/dealsDB"
+	dsn := "root:strongpassword@tcp(localhost:3307)/dealsDB"
 	db, err := sql.Open("mysql", dsn)
 
 	if err != nil {

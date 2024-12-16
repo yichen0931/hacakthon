@@ -20,16 +20,47 @@ func scanRowsIntoStruct(rows *sql.Rows, result interface{}) error {
 	elemType := slicePtr.Elem().Type().Elem()
 	slice := reflect.MakeSlice(slicePtr.Elem().Type(), 0, 0)
 
+	columns, err := rows.Columns()
+	if err != nil {
+		return fmt.Errorf("error fetching columns: %v", err)
+	}
+
 	for rows.Next() {
 		elem := reflect.New(elemType).Elem()
-		fields := make([]interface{}, elem.NumField())
+		fields := make([]interface{}, len(columns))
+
+		// Temporary storage for nullable fields
+		tempValues := make([]interface{}, len(columns))
+
+		// Map each struct field to the correct pointer
 		for i := 0; i < elem.NumField(); i++ {
-			fields[i] = elem.Field(i).Addr().Interface()
+			field := elem.Field(i)
+			if field.Kind() == reflect.String {
+				// Use a temporary interface{} for nullable strings
+				tempValues[i] = new(sql.NullString)
+				fields[i] = tempValues[i]
+			} else {
+				fields[i] = field.Addr().Interface()
+			}
 		}
 
+		// Scan the row into the temporary storage
 		err := rows.Scan(fields...)
 		if err != nil {
 			return fmt.Errorf("error scanning row: %v", err)
+		}
+
+		// Post-process nullable fields
+		for i := 0; i < elem.NumField(); i++ {
+			field := elem.Field(i)
+			if field.Kind() == reflect.String {
+				nullStr, ok := tempValues[i].(*sql.NullString)
+				if ok && !nullStr.Valid {
+					field.SetString("") // Set to empty string or `nil` equivalent
+				} else if ok {
+					field.SetString(nullStr.String)
+				}
+			}
 		}
 
 		slice = reflect.Append(slice, elem)
@@ -42,6 +73,7 @@ func scanRowsIntoStruct(rows *sql.Rows, result interface{}) error {
 /* convert from sql to struct interface */
 func GetSQL(db *sql.DB, tableName string) (result interface{}, err error) {
 	query := fmt.Sprintf(" SELECT * FROM %s", tableName)
+	fmt.Println(query)
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Println("GetTable: Error querying rows:", tableName, err)

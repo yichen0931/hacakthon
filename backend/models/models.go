@@ -6,8 +6,8 @@ type Vendor struct {
 	Address        string
 	IsOpen         bool
 	IsDiscountOpen bool
-	DiscountStart  int64
-	DiscountEnd    int64
+	DiscountStart  string
+	DiscountEnd    string
 }
 
 type Meal struct {
