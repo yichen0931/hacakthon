@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"hackathon/database"
+	"hackathon/models"
 	"net/http"
 	"strings"
 )
@@ -30,23 +31,23 @@ func (a *Apiserver) RegisterRoutes(router *mux.Router) {
 }
 
 func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("SessionID")
+	if err != nil {
+		http.Error(w, "Session cookie not found", http.StatusUnauthorized)
+		return
+	}
+	sessionID := cookie.Value
+
+	var vendorID string
+	err = a.DB.VendorCheckSession(sessionID)
+	if err != nil {
+		http.Error(w, "Invalid or expired session", http.StatusUnauthorized)
+		return
+	}
+
 	//GET Method -- let the vendor see their “home” page (to edit which meal to go live for discount + quantity, etc)
 	if r.Method == http.MethodGet {
 		defer r.Body.Close()
-
-		cookie, err := r.Cookie("SessionID")
-		if err != nil {
-			http.Error(w, "Session cookie not found", http.StatusUnauthorized)
-			return
-		}
-		sessionID := cookie.Value
-
-		var vendorID string
-		err = a.DB.VendorCheckSession(sessionID)
-		if err != nil {
-			http.Error(w, "Invalid or expired session", http.StatusUnauthorized)
-			return
-		}
 
 		results, err := a.DB.VendorViewAllMeal(vendorID)
 		if err != nil {
@@ -61,44 +62,51 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	////POST Method -- INSERT the data back to DB once vendor has set which meal to be live for discount and the quantity
-	//if r.Method == http.MethodPost {
-	//	defer r.Body.Close()
-	//
-	//	// Read the entire request body
-	//	statusData, err := io.ReadAll(r.Body)
-	//	if err != nil {
-	//		http.Error(w, "Failed to read request body", http.StatusBadRequest)
-	//		return
-	//	}
-	//
-	//	fmt.Println("Received data:", string(statusData))
-	//
-	//	// Unmarshal the request body into a map to retrieve the "discountStatus" field
-	//	var requestBody map[string]string
-	//	if err := json.Unmarshal(statusData, &requestBody); err != nil {
-	//		http.Error(w, "Failed to unmarshal request body", http.StatusBadRequest)
-	//		return
-	//	}
-	//
-	//	// Retrieve the "discountStatus" field ("Launch" or "End") from the request body
-	//	status, exists := requestBody["discountStatus"]
-	//	if !exists || (status != "Launch" && status != "End") {
-	//		http.Error(w, "Invalid status, must be 'Launch' or 'End'", http.StatusBadRequest)
-	//		return
-	//	}
-	//
-	//	// Call the DiscountStatus method on the DB client
-	//	if err := a.DB.DiscountStatus(status); err != nil {
-	//		// If DiscountStatus fails, return a 500 error
-	//		http.Error(w, "Failed to set discount status: "+err.Error(), http.StatusInternalServerError)
-	//		return
-	//	}
-	//
-	//	// If everything goes well, return a 200 OK with a success message
-	//	w.WriteHeader(http.StatusOK)
-	//	fmt.Fprintf(w, "Discount status updated to: %v\n", status)
-	//}
+	//POST Method -- INSERT the data back to DB once vendor has set which meal to be live for discount and the quantity
+	if r.Method == http.MethodPost {
+		defer r.Body.Close()
+
+		var updatedDiscounts []models.VendorSetDiscount
+
+		if r.Header.Get("Content-Type") == "application/json" { //Get data passed from client in form format
+			err := json.NewDecoder(r.Body).Decode(&updatedDiscounts)
+			if err != nil {
+				fmt.Println("Error with json decoding of req body in login", err)
+				http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+				return
+			}
+			for _, discount := range updatedDiscounts {
+				// If MealID is empty, or DiscountedPrice or Quantity is invalid (<= 0),
+				// set them as "no discount"
+				if discount.MealID == "" || discount.DiscountedPrice < 0 || discount.Quantity < 0 {
+					http.Error(w, "Invalid or missing necessary fields", http.StatusBadRequest)
+					return
+				}
+
+				// If DiscountedPrice or Quantity is 0, consider it as no discount for that meal
+				if discount.DiscountedPrice == 0 || discount.Quantity == 0 {
+					discount.DiscountedPrice = 0
+					discount.Quantity = 0
+				}
+
+				//proceed to set the discount to the database.
+				err = a.DB.VendorSetDiscount(&discount)
+				if err != nil {
+					http.Error(w, "Failed to insert discount details", http.StatusInternalServerError)
+					return
+				}
+			}
+
+			// Respond back to the client with success
+			w.Header().Set("Content-Type", "application/json")
+			response := map[string]string{"message": "Discount updated successfully"}
+
+			if err := json.NewEncoder(w).Encode(response); err != nil {
+				http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+				return
+			}
+		}
+	}
 }
 
 func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) {

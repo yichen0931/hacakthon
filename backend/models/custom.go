@@ -11,3 +11,9 @@ type VendorView struct {
 	Availability              bool   `json:"availability"`
 	SustainabilityCreditScore int    `json:"sustainabilityCreditScore"`
 }
+
+type VendorSetDiscount struct {
+	MealID          string  `json:"mealID"`
+	DiscountedPrice float64 `json:"discountedPrice"`
+	Quantity        int     `json:"quantity"`
+}
