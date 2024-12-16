@@ -6,6 +6,6 @@ package database
 //	getRequest()
 //}
 //
-//func (api Api) getRequest(w http.ResponseWriter, r *http.Request) {
+//func (api Api) getRequest(w http.ResponseWriter, r  *http.Request) {
 //	rows, err := db.Query
 //}
