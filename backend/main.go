@@ -1,8 +1,8 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
+	"hackathon/database"
 	"hackathon/server"
 	"log"
 	"net/http"
@@ -30,22 +30,8 @@ func enableCORS(next http.Handler) http.Handler {
 }
 
 func main() {
-	// database configuration
-	dsn := "user:strongpassword@tcp(127.0.0.1:3307)/gosecurity"
-	db, err := sql.Open("mysql", dsn)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	defer db.Close() // defer the close
-
-	// ping our database to check if the credentials are valid
-	if err := db.Ping(); err != nil {
-		log.Fatalf("Failed to ping database %v", err)
-	}
-
-	fmt.Println("Successfully connected to MySQL database") // check our connection
+	// initiate new db instance
+	db := database.NewDBClient()
 
 	//initialize api server
 	apiServer := server.NewApiserver(db)
