@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useState, useEffect } from 'react';
 
-const MenuCard = () => {
+const MenuCard = ({mealId, mealName, mealPrice}) => {
   const [quantity, setQuantity] = useState(0);
   const increment = () => {
     setQuantity(quantity + 1); 
@@ -27,7 +27,7 @@ const MenuCard = () => {
         <div className="flex h-full overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
           
           {/* Menu Item Image */}
-          <div className="items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2">
+          <div className="justify-center max-lg:pb-12 max-lg:pt-12 sm:px-5 sm:py-4 ">
             <Image
               className="w-100 max-lg:max-w-100"
               src="/menu-items/sample-image.jpg"
@@ -38,9 +38,9 @@ const MenuCard = () => {
           </div>
 
           {/* Menu Item Details */}
-          <div className="px-4 sm:px-10 items-center">
-            <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Tuna D'Licious</p>
-            <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">Original: S$9.40</p>
+          <div className="px-4 sm:px-4 items-center content-center">
+            <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">{mealName}</p>
+            <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">Original: S${mealPrice.toFixed(2)}</p>
             <div className="flex">
               <div>
                 <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">Set To: </p>
@@ -63,7 +63,7 @@ const MenuCard = () => {
           </div>
 
           {/* Menu Item Quantity */}
-          <div className="px-4 sm:px-10 items-center content-center">
+          <div className="px-4 pt-7 sm:px-10 items-center content-center">
             <p className="my-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">Quantity:</p>
             <div className="flex">
               <div>
