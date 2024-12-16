@@ -6,6 +6,9 @@ export default function Home() {
   const router = useRouter()
 
   return (
-    <Sidebar/>
+    <div>
+      <Sidebar/>
+    </div>
+
   );
 }
