@@ -47,6 +47,25 @@ func (db *DBClient) VendorAddSession(vendorID string) (string, error) {
 	}
 }
 
+// VendorCheckSession is to check for session validity when populating Vendor View Home Page
+func (db *DBClient) VendorCheckSession(sessionID string) error {
+	query := fmt.Sprintf("SELECT VendorID FROM VendorSessions WHERE SessionID = '%s' AND SessionExpiry > NOW()", sessionID)
+	result, err := db.DB.Query(query)
+	if err != nil {
+		fmt.Println("Error querying DB:", err)
+		return err
+	}
+	defer result.Close()
+	for result.Next() {
+		var VendorID string
+		if err := result.Scan(&VendorID); err != nil {
+			fmt.Println("Error scanning DB:", err)
+			return err
+		}
+	}
+	return nil
+}
+
 func (db *DBClient) CustomerLogin(customerID, inputPassword string) error {
 	dbString := fmt.Sprintf("SELECT CustomerID FROM Customer WHERE CustomerID='%s' AND Password='%s'", customerID, inputPassword)
 	result, err := db.DB.Query(dbString)

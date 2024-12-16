@@ -14,8 +14,8 @@ CREATE TABLE Vendor (
                         Address varchar(50) NOT NULL,
                         IsOpen boolean,
                         IsDiscountOpen boolean NOT NULL DEFAULT FALSE,
-                        DiscountStart datetime,
-                        DiscountEnd datetime,
+                        DiscountStart datetime DEFAULT '2024-12-16 21:00:00',
+                        DiscountEnd datetime DEFAULT '2024-12-16 22:00:00',
                         Password varchar(50) NOT NULL
 );
 

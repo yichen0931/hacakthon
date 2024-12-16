@@ -6,7 +6,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"hackathon/database"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -31,57 +30,75 @@ func (a *Apiserver) RegisterRoutes(router *mux.Router) {
 }
 
 func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
-	//if r.Method == http.MethodGet {
-	//	a.DB.VendorGetMeals()
-	//}
-
-	//if r.Method == http.MethodPost {
-	//	body, err := ioutil.ReadAll(r.Body)
-	//	if err != nil {
-	//		w.WriteHeader(http.StatusBadRequest)
-	//	}
-	//	json.Unmarshal(body, &a.DB)
-	//	fmt.Println()
-	//	a.DB.SetDiscountTime(startTime, endTime)
-	//}
-
-	if r.Method == http.MethodPost {
+	//GET Method -- let the vendor see their “home” page (to edit which meal to go live for discount + quantity, etc)
+	if r.Method == http.MethodGet {
 		defer r.Body.Close()
 
-		// Read the entire request body
-		statusData, err := ioutil.ReadAll(r.Body)
+		cookie, err := r.Cookie("SessionID")
 		if err != nil {
-			http.Error(w, "Failed to read request body", http.StatusBadRequest)
+			http.Error(w, "Session cookie not found", http.StatusUnauthorized)
+			return
+		}
+		sessionID := cookie.Value
+
+		var vendorID string
+		err = a.DB.VendorCheckSession(sessionID)
+		if err != nil {
+			http.Error(w, "Invalid or expired session", http.StatusUnauthorized)
 			return
 		}
 
-		fmt.Println("Received data:", string(statusData))
+		results, err := a.DB.VendorViewAllMeal(vendorID)
+		if err != nil {
+			http.Error(w, "Failed to fetch vendor discount details", http.StatusUnauthorized)
+		}
 
-		// Unmarshal the request body into a map to retrieve the "discountStatus" field
-		var requestBody map[string]string
-		if err := json.Unmarshal(statusData, &requestBody); err != nil {
-			http.Error(w, "Failed to unmarshal request body", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(results); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}
 
-		// Retrieve the "discountStatus" field ("Launch" or "End") from the request body
-		status, exists := requestBody["discountStatus"]
-		if !exists || (status != "Launch" && status != "End") {
-			http.Error(w, "Invalid status, must be 'Launch' or 'End'", http.StatusBadRequest)
-			return
-		}
-
-		// Call the DiscountStatus method on the DB client
-		if err := a.DB.DiscountStatus(status); err != nil {
-			// If DiscountStatus fails, return a 500 error
-			http.Error(w, "Failed to set discount status: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		// If everything goes well, return a 200 OK with a success message
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "Discount status updated to: %v\n", status)
 	}
+
+	////POST Method -- INSERT the data back to DB once vendor has set which meal to be live for discount and the quantity
+	//if r.Method == http.MethodPost {
+	//	defer r.Body.Close()
+	//
+	//	// Read the entire request body
+	//	statusData, err := io.ReadAll(r.Body)
+	//	if err != nil {
+	//		http.Error(w, "Failed to read request body", http.StatusBadRequest)
+	//		return
+	//	}
+	//
+	//	fmt.Println("Received data:", string(statusData))
+	//
+	//	// Unmarshal the request body into a map to retrieve the "discountStatus" field
+	//	var requestBody map[string]string
+	//	if err := json.Unmarshal(statusData, &requestBody); err != nil {
+	//		http.Error(w, "Failed to unmarshal request body", http.StatusBadRequest)
+	//		return
+	//	}
+	//
+	//	// Retrieve the "discountStatus" field ("Launch" or "End") from the request body
+	//	status, exists := requestBody["discountStatus"]
+	//	if !exists || (status != "Launch" && status != "End") {
+	//		http.Error(w, "Invalid status, must be 'Launch' or 'End'", http.StatusBadRequest)
+	//		return
+	//	}
+	//
+	//	// Call the DiscountStatus method on the DB client
+	//	if err := a.DB.DiscountStatus(status); err != nil {
+	//		// If DiscountStatus fails, return a 500 error
+	//		http.Error(w, "Failed to set discount status: "+err.Error(), http.StatusInternalServerError)
+	//		return
+	//	}
+	//
+	//	// If everything goes well, return a 200 OK with a success message
+	//	w.WriteHeader(http.StatusOK)
+	//	fmt.Fprintf(w, "Discount status updated to: %v\n", status)
+	//}
 }
 
 func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) {
