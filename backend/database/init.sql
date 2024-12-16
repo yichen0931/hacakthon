@@ -50,11 +50,11 @@ CREATE TABLE Discount (
                           FOREIGN KEY (MealID) REFERENCES Meal(MealID)
 );
 
-CREATE TABLE Order (
+CREATE TABLE Orders (
                        OrderID varchar(50) NOT NULL PRIMARY KEY,
                        CustomerID varchar(50) NOT NULL,
                        RiderID varchar(50) NOT NULL,
-                       OrderStatus varchar(20) ENUM('CART','PENDING','ORDERRECIVEVD','GROUPORDER','PREPARING','PICKED','DELIVERED',),
+                       OrderStatus ENUM('CART','PENDING','ORDERRECEIVED','GROUPORDER','PREPARING','PICKED','DELIVERED'),
                        OrderEnd datetime,
                        Total float,
                        DeliveryAddress varchar(100) NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE OrderDetail (
                              MealID varchar(50) NOT NULL,
                              MealQty INT,
                              MealPrice FLOAT,
-                             FOREIGN KEY (OrderID) REFERENCES Order(OrderID),
+                             FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
                              FOREIGN KEY (MealID) REFERENCES Meal(MealID)
 );
 
@@ -83,8 +83,8 @@ CREATE TABLE Users (
                        UserID varchar(50) NOT NULL PRIMARY KEY,
                        UserName varchar(50) NOT NULL,
                        Password varchar(50),
-                       Role varchar(10) NOT NULL ENUM('VENDOR','CUSTOMER','RIDER')
-                         FOREIGN KEY (UserID) REFERENCES Sessions(UserID)
+                       Role ENUM('VENDOR','CUSTOMER','RIDER') NOT NULL,
+                       FOREIGN KEY (UserID) REFERENCES Sessions(UserID)
 );
 
 -- Insert dummy data into the Vendor table
