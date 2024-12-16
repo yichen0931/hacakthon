@@ -102,3 +102,35 @@ func (a *Apiserver) Login(res http.ResponseWriter, req *http.Request) {
 
 	}
 }
+
+// Checks whether a vendors's session exist
+func (a *Apiserver) CheckSessionExistVendor(req *http.Request) (string, bool) {
+	reqCookie, err := req.Cookie("vendorSessionCookie")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	vendorSessionCookie := reqCookie.Value
+
+	vendorID := a.DB.CheckSessionExistVendor(vendorSessionCookie)
+	if vendorID == "" {
+		return "", false //session doesnt exist
+	}
+	return vendorID, true
+}
+
+// Checks whether a user's session exist
+func (a *Apiserver) CheckSessionExistCustomer(req *http.Request) (string, bool) {
+	reqCookie, err := req.Cookie("customerSessionCookie")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	vendorSessionCookie := reqCookie.Value
+
+	vendorID := a.DB.CheckSessionExistVendor(vendorSessionCookie)
+	if vendorID == "" {
+		return "", false //session doesnt exist
+	}
+	return vendorID, true
+}

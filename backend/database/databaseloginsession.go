@@ -84,3 +84,37 @@ func (db *DBClient) CustomerAddSession(customerID string) (string, error) {
 		return "", errors.New("Failed to add session for customer")
 	}
 }
+
+func (db *DBClient) CheckSessionExistVendor(vendorSessionCookie string) string {
+	dbString := fmt.Sprintf("SELECT VendorID FROM VendorSessions WHERE SessionID='%s'", vendorSessionCookie)
+	result, err := db.DB.Query(dbString)
+	if err != nil {
+		fmt.Println("Error querying database")
+		return ""
+	}
+
+	var vendorID string
+	if result.Next() {
+		result.Scan(&vendorID)
+		return vendorID
+	} else {
+		return ""
+	}
+}
+
+func (db *DBClient) CheckSessionExistCustomer(customerSessionCookie string) string {
+	dbString := fmt.Sprintf("SELECT CustomerID FROM CustomerSessions WHERE SessionID='%s'", customerSessionCookie)
+	result, err := db.DB.Query(dbString)
+	if err != nil {
+		fmt.Println("Error querying database")
+		return ""
+	}
+
+	var customerID string
+	if result.Next() {
+		result.Scan(&customerID)
+		return customerID
+	} else {
+		return ""
+	}
+}
