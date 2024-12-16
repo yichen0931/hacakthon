@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Menu from './components/Menu'
+import Sidebar from '@/components/Sidebar'
+import OperatingTime from '@/components/OperatingTime'
 
 export default function Discounts() {
 
@@ -64,8 +66,12 @@ export default function Discounts() {
     
 
     return (
-        <div>
+    <div className="flex">
+        <Sidebar current="Discounts"/>
+        <div className="flex-1 lg:ml-[300px] p-10 overflow-y-auto">
+            <OperatingTime startTime="21:00" endTime="21:30"/>
             <Menu menuItems={menuItems}/>
         </div>
+    </div>
     )
 }

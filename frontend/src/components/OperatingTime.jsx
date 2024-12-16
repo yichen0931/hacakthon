@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 
-
+// Making operating time component
+// Properties : startTime, endTime
+// Parent page will get value from server and populate 
 function OperatingTime(props) {
     const [formData, setFormData] = useState({StartTime:props.startTime,EndTime:props.endTime})
     let posturl = 'https://localhost:5001/vendor/discount/'
