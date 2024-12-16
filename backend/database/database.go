@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hackathon/models"
 	"log"
+	"net/http"
 )
 
 type DBClient struct {
@@ -29,18 +30,65 @@ func NewDBClient() *DBClient {
 	return newDB
 }
 
-func (db *DBClient) DiscountStatus(res string) error {
-	status := models.Vendor{}
-	fmt.Println("inside", res)
-	if res == "Launch" {
-		status.IsDiscountOpen = true
-		return nil
-	} else if res == "End" {
-		status.IsDiscountOpen = false
-		return nil
+//func (db *DBClient) DiscountStatus(res string) error {
+//	status := models.Vendor{}
+//	fmt.Println("inside", res)
+//	if res == "Launch" {
+//		status.IsDiscountOpen = true
+//		return nil
+//	} else if res == "End" {
+//		status.IsDiscountOpen = false
+//		return nil
+//	}
+//	return fmt.Errorf("Invalid status %v", res)
+//}
+
+func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, error) {
+	var vendorViews []models.VendorView
+
+	query := fmt.Sprintf("SELECT "+
+		"v.IsOpen,"+
+		" v.IsDiscountOpen AS IsDiscount,"+
+		" v.DiscountStart,"+
+		" v.DiscountEnd,"+
+		" m.MealID,"+
+		" m.MealName,"+
+		" m.Description,"+
+		" m.Availability,"+
+		" m.SustainabilityCreditScore"+
+		" FROM Vendor v"+
+		" LEFT JOIN Meal m ON v.VendorID = m.VendorID "+
+		"WHERE v.VendorID = ‘%s’;", vendorID)
+
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		log.Fatal("Failed to query database for vendor views", err.Error())
+		return nil, err
 	}
-	return fmt.Errorf("Invalid status %v", res)
+
+	defer rows.Close()
+	for rows.Next() {
+		var vendorView models.VendorView
+		err := rows.Scan(
+			&vendorView.IsOpen,
+			&vendorView.IsDiscount,
+			&vendorView.DiscountStart,
+			&vendorView.DiscountEnd,
+			&vendorView.MealID,
+			&vendorView.MealName,
+			&vendorView.Description,
+			&vendorView.Availability,
+			&vendorView.SustainabilityCreditScore,
+		)
+		if err != nil {
+			log.Fatalln("Failed to scan row for vendor views", err.Error())
+			return nil, err
+		}
+		vendorViews = append(vendorViews, vendorView)
+		return vendorViews, nil
+	}
 }
+
 func (db *DBClient) GetMealFromVendor(vendorID string) ([]models.Meal, error) {
 	var meals []models.Meal
 
