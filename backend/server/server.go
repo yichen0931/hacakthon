@@ -30,27 +30,6 @@ func (a *Apiserver) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", a.Login)
 }
 
-func (a *Apiserver) Login(res http.ResponseWriter, req *http.Request) {
-	if http.MethodPost == req.Method {
-		if req.Header.Get("Content-Type") == "application/json" {
-			// Create a map to hold the decoded data
-			loginDetails := make(map[string]string)
-
-			// Decode the JSON from the request body into the map
-			err := json.NewDecoder(req.Body).Decode(&loginDetails)
-			if err != nil {
-				fmt.Println("Error with JSON decoding of req body in login:", err)
-				return
-			}
-
-			fmt.Println("Username:", loginDetails["Username"])
-			fmt.Println("Password:", loginDetails["Password"])
-			fmt.Println("Vendor:", loginDetails["Role"])
-		}
-
-	}
-}
-
 func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 	//if r.Method == http.MethodGet {
 	//	a.DB.VendorGetMeals()
