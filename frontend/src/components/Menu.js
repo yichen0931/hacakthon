@@ -8,7 +8,7 @@ const Menu = ({menuItems, postRequest, setPostRequest}) => {
                 {menuItems.map((item) => {
                     if (item.availability == true) {
                         return (
-                            <MenuCard key={item.mealID} mealId={item.mealID} mealName={item.mealName} mealPrice={0} postRequest={postRequest} setPostRequest={setPostRequest}/>
+                            <MenuCard key={item.mealID} mealId={item.mealID} mealName={item.mealName} mealPrice={item.mealPrice} postRequest={postRequest} setPostRequest={setPostRequest}/>
                         )
                     }
                 })}

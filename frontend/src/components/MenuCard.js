@@ -7,7 +7,12 @@ import { useState, useEffect } from 'react';
 
 const MenuCard = ({mealId, mealName, mealPrice, postRequest, setPostRequest}) => {
   const [quantity, setQuantity] = useState(0);
-  const [price,setPrice] = useState(mealPrice);
+  const [price,setPrice] = useState(mealPrice || 0);
+
+  useEffect(() => {
+    setPrice(mealPrice || 0);
+  }, [mealPrice]);
+
   const increment = () => {
     setQuantity(quantity + 1); 
   }
@@ -28,34 +33,45 @@ const MenuCard = ({mealId, mealName, mealPrice, postRequest, setPostRequest}) =>
 
   const handlePriceChange = (e) => {
     const value = parseFloat(e.target.value);
-    if (!isNaN(value)) {
+    if (!isNaN(value) && value >= 0) {
       setPrice(value);
     } else {
-      setPrice(mealPrice)
+      setPrice(0)
     }
   }
 
   useEffect(() => {
-    let mealArray = postRequest.Meals
-    if (mealArray.some(meal => meal.MealID === mealId)) {
-      let id = mealArray.findIndex(meal => meal.MealID === mealId)
-      let updatedMeal = mealArray[id]
-      updatedMeal.Quantity = quantity
-      updatedMeal.DiscountedPrice = quantity
-      mealArray[id] = updatedMeal
-    } else {
-      let newMeal = {
-        MealID : mealId,
-        DiscountedPrice: price, 
-        Quantity: quantity
-      }
-      mealArray.push(newMeal)
-    }
-    setPostRequest((prevData)=>({
+    setPostRequest((prevData) => {
+      // Safely create a new Meals array
+      const updatedMeals = prevData.Meals.map((meal) =>
+          meal.MealID === mealId
+              ? { ...meal, Quantity: quantity, DiscountedPrice: price }
+              : meal
+      );
+
+      // Check if the meal is new and needs to be added
+      const mealExists = prevData.Meals.some((meal) => meal.MealID === mealId);
+
+      const finalMeals = mealExists
+          ? updatedMeals
+          : [
+            ...updatedMeals,
+            {
+              MealID: mealId,
+              DiscountedPrice: price,
+              Quantity: quantity,
+            },
+          ];
+
+      return {
         ...prevData,
-        Meals:mealArray,
-    }))
-  },[quantity])
+        Meals: finalMeals, // Update immutably
+      };
+      console.log("Updated PostRequest:", updatedRequest);
+      return updatedRequest
+    });
+  }, [quantity, price]);
+
 
   return (
     <div>
