@@ -10,4 +10,3 @@ Setup the docker database (ps, you might want to change ports if cannot run port
 - docker exec -it mysqltestdb mysql -u user -p
 when prompted to enter password, key in: strongpassword
 
-testtttt
