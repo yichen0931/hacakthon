@@ -98,7 +98,6 @@ func convertStringToType(name string) interface{} {
 /* convert from sql to struct interface */
 func GetSQL(db *sql.DB, tableName string) (result interface{}, err error) {
 	query := fmt.Sprintf(" SELECT * FROM %s", tableName)
-	fmt.Println(query)
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Println("GetTable: Error querying rows:", tableName, err)
@@ -126,9 +125,9 @@ func PostSQL(db *sql.DB, tableName string, table interface{}) error {
 		return fmt.Errorf("table must be a struct")
 	}
 
-	var idNames []string
-	var placeholders []string
-	var idValues []interface{}
+	var fieldNames []string
+	var fieldValues []string
+
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		fieldName := field.Tag.Get("db")
@@ -136,48 +135,53 @@ func PostSQL(db *sql.DB, tableName string, table interface{}) error {
 			fieldName = field.Name
 		}
 
+		// Skip unexported fields
 		if !v.Field(i).CanInterface() {
 			continue
 		}
 
+		// Retrieve field value
 		fieldValue := v.Field(i).Interface()
-		idValues = append(idValues, fieldValue)
-		idNames = append(idNames, fieldName)
 
-		// Format the value for SQL
-		switch v.Field(i).Kind() {
-		case reflect.String:
-			placeholders = append(placeholders, fmt.Sprintf("'%s'", fieldValue))
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			placeholders = append(placeholders, fmt.Sprintf("%d", fieldValue))
-		case reflect.Bool:
-			placeholders = append(placeholders, fmt.Sprintf("%t", fieldValue))
-		case reflect.Float32, reflect.Float64:
-			placeholders = append(placeholders, fmt.Sprintf("%f", fieldValue))
+		// Handle NULL values or format based on type
+		switch value := fieldValue.(type) {
+		case string:
+			if value == "" {
+				fieldValues = append(fieldValues, "NULL")
+			} else {
+				fieldValues = append(fieldValues, fmt.Sprintf("'%s'", value))
+			}
+		case int, int8, int16, int32, int64, float32, float64:
+			fieldValues = append(fieldValues, fmt.Sprintf("%v", value))
+		case bool:
+			fieldValues = append(fieldValues, fmt.Sprintf("%t", value))
 		default:
 			if fieldValue == nil {
-				placeholders = append(placeholders, "NULL")
+				fieldValues = append(fieldValues, "NULL")
 			} else {
-				placeholders = append(placeholders, fmt.Sprintf("'%v'", fieldValue))
+				fieldValues = append(fieldValues, fmt.Sprintf("'%v'", value))
 			}
 		}
+
+		fieldNames = append(fieldNames, fieldName)
 	}
 
-	if len(idNames) == 0 {
+	if len(fieldNames) == 0 {
 		return fmt.Errorf("no fields available to insert into %s", tableName)
 	}
 
 	query := fmt.Sprintf(
 		"INSERT INTO %s (%s) VALUES (%s)",
 		tableName,
-		strings.Join(idNames, ", "),
-		strings.Join(placeholders, ", "),
+		strings.Join(fieldNames, ", "),
+		strings.Join(fieldValues, ", "),
 	)
-	fmt.Println(query)
+	fmt.Println("Executing Query:", query)
 	_, err := db.Exec(query)
 	if err != nil {
 		return fmt.Errorf("error executing query: %w", err)
 	}
+
 	return nil
 }
 

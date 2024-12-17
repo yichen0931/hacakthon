@@ -112,7 +112,7 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 
 func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) {
 	// get list of vendors
-	vendors, err := database.GetSQL(a.DB.DB, "Vendors")
+	vendors, err := database.GetSQL(a.DB.DB, "Vendor")
 	if err != nil {
 		http.Error(w, "Failed to fetch vendor discount details", http.StatusUnauthorized)
 		return
