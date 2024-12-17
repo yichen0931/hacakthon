@@ -6,9 +6,11 @@ const Menu = ({menuItems}) => {
             <h2 className="text-2xl font-bold mb-4">Menu</h2>
             <div className="w-full space-y-4">
                 {menuItems.map((item) => {
-                    if (item.Availability == 1) {
+                    if (item.availability == true) {
                         return (
-                            <MenuCard key={item.MealID} mealName={item.MealName} mealPrice={item.Price} />
+                            <div>
+                                <MenuCard key={item.mealID} mealName={item.mealName} mealPrice={0} />
+                            </div>
                         )
                     }
                 })}
