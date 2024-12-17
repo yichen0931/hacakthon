@@ -25,7 +25,7 @@ function VendorCard(props) {
                     <p>{props.address}</p>
                     <div className="flex justify-between">
                         <span className=""><Image src={icon} className="inline" alt="rider-icon"/>  S$3.20</span>
-                        <span className="text-pink-500 font-bold">{(props.startTime=="0:00am" && props.endTime=="0:00am") ? "While Stocks Last" : props.startTime+ "-" +  props.endTime}</span>
+                        <span className="text-pink-500 font-bold">{(props.startTime=="0:00am" && props.endTime=="0:00am") ? "While Stocks Last" : props.startTime+ " - " +  props.endTime}</span>
                     </div>
                 </div>
             </div>

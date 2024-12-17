@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"hackathon/models"
 	"log"
+	"time"
 )
 
 type DBClient struct {
@@ -33,6 +34,20 @@ func NewDBClient() *DBClient {
 // View the (home) page for Vendor once they are logged in
 func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, error) {
 	var vendorViews []models.VendorView
+	today := time.Now().Format("2006-01-02 00:00:00")
+
+	// Update query to set today's date for NULL values in DiscountStart and DiscountEnd
+	updateQuery := fmt.Sprintf(`
+		UPDATE Vendor
+		SET DiscountStart = COALESCE(DiscountStart, '%s'),
+			DiscountEnd = COALESCE(DiscountEnd, '%s')
+		WHERE VendorID = '%s'
+	`, today, today, vendorID)
+
+	_, err := db.DB.Exec(updateQuery)
+	if err != nil {
+		log.Fatalf("Failed to update NULL fields: %s", err.Error())
+	}
 
 	//query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, , m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
 
@@ -46,19 +61,19 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 	}
 
 	defer rows.Close()
-	//var discountStart sql.NullTime
-	//var discountEnd sql.NullTime
 	for rows.Next() {
 		fmt.Println("inside")
 		var vendorView models.VendorView
 		fmt.Println("scanning")
+		// var discountStart sql.NullTime
+		// var discountEnd sql.NullTime
 		err := rows.Scan(
 			&vendorView.IsOpen,
 			&vendorView.IsDiscount,
 			&vendorView.DiscountStart,
 			&vendorView.DiscountEnd,
-			//&discountStart,
-			//&discountEnd,
+			// &discountStart,
+			// &discountEnd,
 			&vendorView.MealID,
 			&vendorView.MealName,
 			&vendorView.Description,
@@ -67,13 +82,19 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 			&vendorView.MealPrice,
 		)
 
-		//if !discountStart.Valid {
-		//	vendorView.DiscountStart = "0001-01-01 00:00:00"
-		//}
-		//
-		//if !discountEnd.Valid {
-		//	vendorView.DiscountEnd = "0001-01-01 00:00:00"
-		//}
+		// Replace NULL values with today's date
+		// if !discountStart.Valid {
+		// 	vendorView.DiscountStart = today
+		// } else {
+		// 	vendorView.DiscountStart = discountStart.Time.Format("2006-01-02 15:04:05")
+		// }
+
+		// if !discountEnd.Valid {
+		// 	vendorView.DiscountEnd = today
+		// } else {
+		// 	vendorView.DiscountEnd = discountEnd.Time.Format("2006-01-02 15:04:05")
+		// }
+
 		fmt.Println("vendor view", vendorView)
 		if err != nil {
 			log.Fatalln("Failed to scan row for vendor views", err.Error())
