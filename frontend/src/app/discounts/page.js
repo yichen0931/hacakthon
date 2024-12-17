@@ -106,6 +106,10 @@ export default function Discounts() {
     useEffect(() => {
         if (postRequest.Button != "") {
             sendPostRequest()
+            setPostRequest((prevData)=>({
+                ...prevData,
+                Button:""
+            }))
             window.location.reload()
         }
     },[postRequest])
