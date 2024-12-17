@@ -57,7 +57,7 @@ export default function VendorPage({ params }) {
             const result = await response.json();
             console.log(result)
             
-            if (true) {
+            if (result.orderInserted) {
                 // Redirect or handle successful login
                 console.log("Checkout successful!")
                 router.push("/checkoutOngoing")
