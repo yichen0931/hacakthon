@@ -37,7 +37,7 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 	//query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
 
 	//this is only for testing purpose (need to make sure that DiscountStart, DiscountEnd is NOT NULL)
-	query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
+	query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore, m.Price FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
@@ -46,6 +46,8 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 	}
 
 	defer rows.Close()
+	//var discountStart sql.NullTime
+	//var discountEnd sql.NullTime
 	for rows.Next() {
 		fmt.Println("inside")
 		var vendorView models.VendorView
@@ -53,14 +55,25 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 		err := rows.Scan(
 			&vendorView.IsOpen,
 			&vendorView.IsDiscount,
-			&vendorView.DiscountStart,
-			&vendorView.DiscountEnd,
+			//&vendorView.DiscountStart,
+			//&vendorView.DiscountEnd,
+			//&discountStart,
+			//&discountEnd,
 			&vendorView.MealID,
 			&vendorView.MealName,
 			&vendorView.Description,
 			&vendorView.Availability,
 			&vendorView.SustainabilityCreditScore,
+			&vendorView.MealPrice,
 		)
+
+		//if !discountStart.Valid {
+		//	vendorView.DiscountStart = "0001-01-01 00:00:00"
+		//}
+		//
+		//if !discountEnd.Valid {
+		//	vendorView.DiscountEnd = "0001-01-01 00:00:00"
+		//}
 		fmt.Println("vendor view", vendorView)
 		if err != nil {
 			log.Fatalln("Failed to scan row for vendor views", err.Error())
@@ -77,7 +90,7 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 func (db *DBClient) VendorSetDiscount(vendorLaunch *models.VendorLaunch) (bool, error) {
 	// Iterate over each discount
 	for _, discount := range vendorLaunch.Discount {
-		query := fmt.Sprintf("INSERT INTO Discount (MealID, DiscountedPrice, Quantity) VALUES ('%s', %v, %d)", discount.MealID, discount.DiscountPrice, discount.Quantity)
+		query := fmt.Sprintf("UPDATE Discount SET DiscountedPrice = %v, Quantity = %d WHERE MealID ='%s'", discount.DiscountPrice, discount.Quantity, discount.MealID)
 		fmt.Println(query)
 		_, err := db.DB.Exec(query)
 		if err != nil {

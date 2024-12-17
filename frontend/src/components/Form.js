@@ -41,6 +41,8 @@ const Form = () => {
                 console.log(Role)
                 if (Role === "Vendor") {
                     router.push("/discounts")
+                } else if (Role == "Customer") {
+                    router.push("/customer")
                 } else {
                     setErrorMessage('Unknown role');
                 }
