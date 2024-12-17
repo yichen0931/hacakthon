@@ -40,13 +40,12 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 	}
 	sessionID := cookie.Value
 
-	var vendorID string
-	err = a.DB.VendorCheckSession(sessionID)
-	if err != nil {
+	vendorID, err := a.DB.VendorCheckSession(sessionID)
+	if err != nil || vendorID == "" {
 		http.Error(w, "Invalid or expired session", http.StatusUnauthorized)
+		fmt.Println("error:", err, "vendorID:", vendorID)
 		return
 	}
-
 	//GET Method -- let the vendor see their “home” page (to edit which meal to go live for discount + quantity, etc)
 	if r.Method == http.MethodGet {
 		defer r.Body.Close()
