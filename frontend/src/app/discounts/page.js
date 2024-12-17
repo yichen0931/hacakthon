@@ -5,7 +5,6 @@ import Sidebar from '@/components/Sidebar'
 import OperatingTime from '@/components/OperatingTime'
 import LaunchButton from '@/components/LaunchButton'
 import Header from '@/components/Header'
-import moment from 'moment'
 
 var menuItems = [
     {
