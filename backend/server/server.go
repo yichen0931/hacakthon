@@ -3,6 +3,11 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"hackathon/database"
+	"hackathon/models"
+	"net/http"
+	"strings"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"hackathon/database"
@@ -13,10 +18,13 @@ import (
 
 type Apiserver struct {
 	DB *database.DBClient
+	DB *database.DBClient
 }
 
 func NewApiserver(db *database.DBClient) *Apiserver {
+func NewApiserver(db *database.DBClient) *Apiserver {
 	return &Apiserver{
+		DB: db,
 		DB: db,
 	}
 }
