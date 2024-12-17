@@ -127,7 +127,7 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 		vendor = handleScheduleButton(frontend, vendor)
 		//fmt.Println("vendor is discount", vendorDiscount.IsDiscountOpen)
 		vendorDiscount.IsDiscountOpen = vendor.IsDiscountOpen
-		postResults, err := a.DB.VendorSetDiscount(&vendorDiscount)
+		postResults, err := a.DB.VendorSetDiscount(&vendorDiscount, vendorID)
 		if err != nil {
 			http.Error(w, "Failed to process discounts", http.StatusInternalServerError)
 			return

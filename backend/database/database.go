@@ -87,7 +87,7 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 
 // Inserting the meals discounts/prices and quantity on Vendor side
 // Updating the discount start time, end time which are ready for launch on the Vendor side
-func (db *DBClient) VendorSetDiscount(vendorLaunch *models.VendorLaunch) (bool, error) {
+func (db *DBClient) VendorSetDiscount(vendorLaunch *models.VendorLaunch, vendorID string) (bool, error) {
 	// Iterate over each discount
 	for _, discount := range vendorLaunch.Discount {
 		query := fmt.Sprintf("UPDATE Discount SET DiscountedPrice = %v, Quantity = %d WHERE MealID ='%s'", discount.DiscountPrice, discount.Quantity, discount.MealID)
@@ -102,7 +102,7 @@ func (db *DBClient) VendorSetDiscount(vendorLaunch *models.VendorLaunch) (bool, 
 
 	// Build the update query based on whether the times were parsed successfully
 	//timeValue := time.Now()
-	updateQuery := fmt.Sprintf("UPDATE Vendor SET IsDiscountOpen = %t, DiscountStart = '%s', DiscountEnd = '%s'", vendorLaunch.IsDiscountOpen, vendorLaunch.DiscountStart, vendorLaunch.DiscountEnd)
+	updateQuery := fmt.Sprintf("UPDATE Vendor SET IsDiscountOpen = %t, DiscountStart = '%s', DiscountEnd = '%s' WHERE VendorID = '%s'", vendorLaunch.IsDiscountOpen, vendorLaunch.DiscountStart, vendorLaunch.DiscountEnd, vendorID)
 	fmt.Println("update query", updateQuery)
 
 	// Execute the query with the appropriate parameters
