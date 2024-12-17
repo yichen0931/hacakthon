@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"hackathon/models"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 var mutex sync.Mutex
@@ -47,14 +48,28 @@ func (a *Apiserver) Checkout(res http.ResponseWriter, req *http.Request) {
 
 			//"Meal":[{"ID":"M001","Qty":2, "Price":2.50}]
 			var meals []models.OrderDetail
-			fetchMeals := checkoutDetails["Meal"].([]interface{})
+			fetchMeals, okq := checkoutDetails["Meal"].(map[string]interface{})
+			if !okq {
+				fmt.Println(okq)
+				return
+			}
+			// fetchMeals := checkoutDetails["Meal"].([]interface{})
 
 			for _, meal := range fetchMeals {
-				getMealID := meal.(map[string]interface{})["ID"].(string)
-				getMealQty := int(meal.(map[string]interface{})["Qty"].(float64)) //This is a common issue when dealing with JSON data in Go, since JSON numbers (even integers) are typically decoded as float64 in Go.
-				getMealPrice := meal.(map[string]interface{})["Price"].(float64)
-				individualMeal := models.OrderDetail{OrderID: newOrderID, MealID: getMealID, MealQty: getMealQty, MealPrice: getMealPrice}
-				meals = append(meals, individualMeal)
+				mealMap, ok := meal.(map[string]interface{})
+				if !ok {
+					fmt.Print("something wrong")
+					return
+				} else {
+					getMealID := mealMap["ID"].(string)
+					fmt.Print("print meal id", getMealID)
+					getMealQty := int(mealMap["Qty"].(float64)) //This is a common issue when dealing with JSON data in Go, since JSON numbers (even integers) are typically decoded as float64 in Go.
+					fmt.Print("print meal qty", getMealQty)
+					getMealPrice := mealMap["Price"].(float64)
+					fmt.Print("print meal price", getMealPrice)
+					individualMeal := models.OrderDetail{OrderID: newOrderID, MealID: getMealID, MealQty: getMealQty, MealPrice: getMealPrice}
+					meals = append(meals, individualMeal)
+				}
 			}
 			//NEED TO update the discounts qty if order successfully pass thru.
 			//also need to check beforehand that qty fits whatever is left
