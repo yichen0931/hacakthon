@@ -10,7 +10,6 @@ export default function Home() {
     <div className="flex">
       <Sidebar current="Dashboard"/>
       <div className="flex-1 lg:ml-[300px] p-10 overflow-y-auto">
-        <OperatingTime/>
       </div>
     </div>
   );
