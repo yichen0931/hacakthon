@@ -5,42 +5,6 @@ import Sidebar from '@/components/Sidebar'
 import OperatingTime from '@/components/OperatingTime'
 import LaunchButton from '@/components/LaunchButton'
 import Header from '@/components/Header'
-import moment from 'moment'
-
-var menuItems = [
-    {
-        "MealID": "M007",
-        "MealName": "Chocolate Lava Cake",
-        "Description": "Molten chocolate dessert",
-        "Price": 6.5,
-        "Availability": 0,
-        "SustainabilityCreditScore": 55
-    },
-    {
-        "MealID": "M008",
-        "MealName": "Vanilla Ice Cream",
-        "Description": "Classic vanilla ice cream scoop",
-        "Price": 4,
-        "Availability": 1,
-        "SustainabilityCreditScore": 60
-    },
-    {
-        "MealID": "M009",
-        "MealName": "Apple Pie",
-        "Description": "Warm apple pie with cinnamon",
-        "Price": 5,
-        "Availability": 1,
-        "SustainabilityCreditScore": 50
-    },
-    {
-        "MealID": "M010",
-        "MealName": "Cheesecake",
-        "Description": "Creamy New York-style cheesecake",
-        "Price": 6,
-        "Availability": 1,
-        "SustainabilityCreditScore": 60
-    },
-]
 
 export default function Discounts() {    
     const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
