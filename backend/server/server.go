@@ -33,7 +33,7 @@ func (a *Apiserver) RegisterRoutes(router *mux.Router) {
 }
 
 func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("SessionID")
+	cookie, err := r.Cookie("vendorSessionCookie")
 	if err != nil {
 		http.Error(w, "Session cookie not found", http.StatusUnauthorized)
 		return
