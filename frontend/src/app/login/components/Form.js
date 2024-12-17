@@ -61,7 +61,7 @@ const Form = () => {
             
             {/* User ID Field */}
             <div>
-              <label htmlFor="userid" className="block text-sm/6 font-medium text-gray-900">
+              <label htmlFor="userid" className="block text-sm/6 font-medium text-gray-900 dark:text-white">
                 User ID
               </label>
               <div className="mt-2">
@@ -70,7 +70,7 @@ const Form = () => {
                   name="userid"
                   type="text"
                   onChange={(e) => setUserID(e.target.value)}
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-pink-600 sm:text-sm/6"
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-pink-600 sm:text-sm/6 dark:text-white"
                 />
               </div>
             </div>
@@ -78,10 +78,10 @@ const Form = () => {
             {/* Password Field */}
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+                <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900 dark:text-white">
                   Password
                 </label>
-                <div className="text-sm">
+                <div className="text-sm dark:text-white">
                   <a href="#" className="font-semibold text-pink-600 hover:text-pink-500">
                     Forgot password?
                   </a>
@@ -95,7 +95,7 @@ const Form = () => {
                   required
                   autoComplete="current-password"
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-pink-600 sm:text-sm/6"
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 dark:text-white focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-pink-600 sm:text-sm/6"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ const Form = () => {
             {/* User Role Dropdown */}
             <div>
               <div className="items-center justify-between">
-                <label htmlFor="Role" className="block text-sm/6 font-medium text-gray-900">
+                <label htmlFor="Role" className="block text-sm/6 font-medium text-gray-900 dark:text-white">
                   Role
                 </label>
               </div>
@@ -115,8 +115,6 @@ const Form = () => {
                 </select>
               </div>
             </div>
-
-
 
             {/* Login Button */}
             <div>
