@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hackathon/models"
 	"log"
+	"time"
 )
 
 type DBClient struct {
@@ -72,19 +73,33 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 }
 
 // Inserting the meals discounts/prices and quantity on Vendor side
-func (db *DBClient) VendorSetDiscount(updatedDiscount *models.VendorSetDiscount) error {
-
-	query := fmt.Sprintf("INSERT INTO Discount (MealID, DiscountedPrice, Quantity) VALUES ('%s', '%.2f', '%d')", updatedDiscount.MealID, updatedDiscount.DiscountedPrice, updatedDiscount.Quantity)
-
-	_, err := db.DB.Exec(query)
-	if err != nil {
-		log.Fatalf("Failed to insert Discounted meal item: %s", err.Error())
-		return err
+// Updating the discount start time, end time which are ready for launch on the Vendor side
+func (db *DBClient) VendorSetDiscount(vendorLaunch *models.VendorLaunch) (bool, error) {
+	// Iterate over each discount
+	for _, discount := range vendorLaunch.Discount {
+		query := fmt.Sprintf("INSERT INTO Discount (MealID, DiscountedPrice, Quantity) VALUES ('%s', %v, %d)", discount.MealID, discount.DiscountPrice, discount.Quantity)
+		fmt.Println(query)
+		_, err := db.DB.Exec(query)
+		if err != nil {
+			log.Fatalf("Failed to insert Discounted meal item: %s", err.Error())
+			return false, err
+		}
+		fmt.Printf("Successfully inserted discount for MealID %s\n", discount.MealID)
 	}
 
-	fmt.Println("Successfully inserted Discounted meal item")
-	return nil
+	// Build the update query based on whether the times were parsed successfully
+	timeValue := time.Now()
+	updateQuery := fmt.Sprintf("UPDATE Vendor SET IsDiscountOpen = %t, DiscountStart = '%v', DiscountEnd = '%v'", vendorLaunch.IsDiscountOpen, timeValue.Format(vendorLaunch.DiscountStart), timeValue.Format(vendorLaunch.DiscountEnd))
+	fmt.Println("update query", updateQuery)
 
+	// Execute the query with the appropriate parameters
+	_, err := db.DB.Exec(updateQuery)
+	if err != nil {
+		log.Fatalf("Failed to update Vendor Discount status: %s", err.Error())
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (db *DBClient) GetMealFromVendor(vendorID string) ([]models.Meal, error) {
