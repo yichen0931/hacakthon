@@ -13,7 +13,7 @@ func ConvertStringToTime(t string) (time.Time, error) {
 }
 
 func ConvertTimeToString(t time.Time) string {
-	timeString := time.Now().Add(1 * time.Hour).Format("2006-01-02 15:04:05")
+	timeString := time.Now().Format("2006-01-02 15:04:05")
 	return timeString
 }
 
@@ -23,10 +23,13 @@ type Frontend struct {
 	end    time.Time
 }
 
-func handleScheduleButton(frontend Frontend, vendor models.Vendor) models.Vendor {
+func handleScheduleButton(frontend Frontend, vendor *models.Vendor) *models.Vendor {
+	fmt.Println("lawl", frontend.button, vendor)
 	switch frontend.button {
 	case "Launch":
+		fmt.Println("it launcehd", vendor.IsDiscountOpen)
 		vendor.IsDiscountOpen = true
+		fmt.Println("it checkue", vendor.IsDiscountOpen)
 
 	case "Schedule":
 		t := time.Now()
@@ -44,6 +47,6 @@ func handleScheduleButton(frontend Frontend, vendor models.Vendor) models.Vendor
 	}
 	vendor.DiscountStart = ConvertTimeToString(frontend.start)
 	vendor.DiscountEnd = ConvertTimeToString(frontend.end)
-
+	fmt.Println(vendor)
 	return vendor
 }

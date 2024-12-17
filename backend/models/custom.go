@@ -12,8 +12,10 @@ type VendorView struct {
 	SustainabilityCreditScore int    `json:"sustainabilityCreditScore"`
 }
 
-type VendorSetDiscount struct {
-	MealID          string  `json:"mealID"`
-	DiscountedPrice float64 `json:"discountedPrice"`
-	Quantity        int     `json:"quantity"`
+type VendorLaunch struct {
+	Discount       []Discount `json:"Meals"`
+	DiscountStart  string     `json:"DiscountStart"`
+	DiscountEnd    string     `json:"DiscountEnd"`
+	Button         string     `json:"Button"`
+	IsDiscountOpen bool
 }

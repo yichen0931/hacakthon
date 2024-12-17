@@ -20,7 +20,7 @@ type Meal struct {
 	Price                     float64
 	Availability              bool
 	SustainabilityCreditScore int
-	VendorImage string
+	VendorImage               string
 }
 
 type Rider struct {
@@ -39,9 +39,9 @@ type Customer struct {
 }
 
 type Discount struct {
-	MealID        string
-	DiscountPrice float64
-	Quantity      int
+	MealID        string  `json:"MealID"`
+	DiscountPrice float64 `json:"DiscountPrice"`
+	Quantity      int     `json:"Quantity"`
 }
 
 //const (

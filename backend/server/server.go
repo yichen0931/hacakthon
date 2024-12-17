@@ -7,6 +7,7 @@ import (
 	"hackathon/models"
 	"net/http"
 	"strings"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -63,49 +64,76 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	//POST Method -- INSERT the data back to DB once vendor has set which meal to be live for discount and the quantity
+	//POST Method (VendorSetDiscount) -- INSERT the data back to DB once vendor has set which meal to be live for discount and the quantity
+	//POST Method (VendorSetLaunch) -- UPDATE this is for updating the DiscountStart and DiscountEnd time for launch/end of discount
 	if r.Method == http.MethodPost {
 		defer r.Body.Close()
 
-		var updatedDiscounts []models.VendorSetDiscount
+		var vendorDiscount models.VendorLaunch
 
-		if r.Header.Get("Content-Type") == "application/json" { //Get data passed from client in form format
-			err := json.NewDecoder(r.Body).Decode(&updatedDiscounts)
-			if err != nil {
-				fmt.Println("Error with json decoding of req body in login", err)
-				http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
-				return
-			}
-			for _, discount := range updatedDiscounts {
-				// If MealID is empty, or DiscountedPrice or Quantity is invalid (<= 0),
-				// set them as "no discount"
-				if discount.MealID == "" || discount.DiscountedPrice < 0 || discount.Quantity < 0 {
-					http.Error(w, "Invalid or missing necessary fields", http.StatusBadRequest)
-					return
-				}
+		if r.Header.Get("Content-Type") != "application/json" {
+			http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
+			return
+		}
+		fmt.Println("print req body", r.Body)
+		err := json.NewDecoder(r.Body).Decode(&vendorDiscount)
 
-				// If DiscountedPrice or Quantity is 0, consider it as no discount for that meal
-				if discount.DiscountedPrice == 0 || discount.Quantity == 0 {
-					discount.DiscountedPrice = 0
-					discount.Quantity = 0
-				}
+		if err != nil {
+			http.Error(w, "Failed to decode vendor discount details", http.StatusBadRequest)
+			return
+		}
 
-				//proceed to set the discount to the database.
-				err = a.DB.VendorSetDiscount(&discount)
-				if err != nil {
-					http.Error(w, "Failed to insert discount details", http.StatusInternalServerError)
-					return
-				}
-			}
+		if vendorDiscount.DiscountStart == "00:00" {
+			vendorDiscount.DiscountStart = "0001-01-01 00:00:00"
+		}
 
-			// Respond back to the client with success
-			w.Header().Set("Content-Type", "application/json")
-			response := map[string]string{"message": "Discount updated successfully"}
+		if vendorDiscount.DiscountEnd == "00:00" {
+			vendorDiscount.DiscountEnd = "0001-01-01 00:00:00"
+		}
 
-			if err := json.NewEncoder(w).Encode(response); err != nil {
-				http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-				return
-			}
+		// Parse DiscountStart and DiscountEnd
+		const timeLayout = "2006-01-02 15:04:05"
+		fmt.Println("ewfaewsgfvsewd", vendorDiscount.DiscountStart)
+		start, err := time.Parse(timeLayout, vendorDiscount.DiscountStart)
+		if err != nil {
+			http.Error(w, "Invalid DiscountStart format", http.StatusBadRequest)
+			return
+		}
+
+		end, err := time.Parse(timeLayout, vendorDiscount.DiscountEnd)
+		if err != nil {
+			http.Error(w, "Invalid DiscountEnd format", http.StatusBadRequest)
+			return
+		}
+
+		// Create Frontend struct
+		frontend := Frontend{
+			button: vendorDiscount.Button,
+			start:  start,
+			end:    end,
+		}
+
+		fmt.Println("D BUTTON", frontend.button, vendorDiscount.Button)
+
+		// Handle the schedule button
+		vendor := &models.Vendor{} // Assume an existing Vendor struct
+		vendor = handleScheduleButton(frontend, vendor)
+		//fmt.Println("vendor is discount", vendorDiscount.IsDiscountOpen)
+		vendorDiscount.IsDiscountOpen = vendor.IsDiscountOpen
+		postResults, err := a.DB.VendorSetDiscount(&vendorDiscount)
+		if err != nil {
+			http.Error(w, "Failed to process discounts", http.StatusInternalServerError)
+			return
+		}
+
+		// Respond back to the client
+		w.Header().Set("Content-Type", "application/json")
+		response := map[string]bool{
+			"success": postResults,
+		}
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
 		}
 	}
 }
