@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 // Properties : startTime, endTime
 // Parent page will get value from server and populate 
 function OperatingTime({discountStatus, setDiscountStatus, PostDiscountStatus}) {
-    let posturl = 'https://localhost:5001/vendor/discount/'
 
     // update formData state when there is a change in form data
     const handleChange = (e) => {
