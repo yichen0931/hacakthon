@@ -28,7 +28,7 @@ CREATE TABLE Meal (
                       Price float,
                       Availability boolean,
                       SustainabilityCreditScore int,
-                      MealImage varchar(100)
+                      MealImage varchar(100),
                       FOREIGN KEY (VendorID) REFERENCES Vendor(VendorID)
 );
 
