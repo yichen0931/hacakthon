@@ -31,18 +31,26 @@ export default function Customer() {
             setLoading(false)
         }
     },[])
-    
-    
 
     return (
         <div className="max-w-[430px] m-auto relative">
             <ImageWithOverlay imgsrc={backgroundImage} text="Your last happy hour deals"/>
             <div className="overflow-y-auto">
                 {loading && <p>Loading...</p>}
-                {}
                 {!loading && data && (
                     data.map((item) => {
-                        return(<VendorCard key={item.VendorID} imgsrc={"/images/"+item.VendorImage} name="Delifrance" startTime="09:00pm" endTime="9.30pm" address="123 Green Street" link="#"/>)
+                        const formatTime = (timeString) => {
+                            const date = new Date(timeString);
+                            let hours = date.getHours();
+                            const minutes = date.getMinutes();
+                            const ampm = hours >= 12 ? 'pm' : 'am';
+                            hours = hours % 12
+                            const formattedMin = minutes.toString().padStart(2, '0');
+                            return `${hours}:${formattedMin}${ampm}`
+                        };
+
+                        return(<VendorCard key={item.VendorID} imgsrc={"/images/"+item.VendorImage} name={item.VendorName} startTime={formatTime(item.DiscountStart)} endTime={formatTime(item.DiscountEnd)} address={item.Address} link={`/customer/deals/${item.VendorID}`}>
+                        </VendorCard>)
                     })
                 )}
             </div>
