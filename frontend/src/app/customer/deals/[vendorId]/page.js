@@ -119,7 +119,7 @@ export default function VendorPage({ params }) {
                     <div className="md:flex-1 px-4">
                         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 text-center">{menuItems[0]?.VendorName}</h2>
                         <p className="deal-info text-center">
-                            deals open from <span class="start-time"> 09:00 PM </span> - <span className="end-time">09:30 PM</span>, while stocks last.
+                            deals open for limited time only, <span class="stocks">while stocks last</span>
                         </p>
                         <div className="mb-4">
                             {menuItems.map((item) => {
