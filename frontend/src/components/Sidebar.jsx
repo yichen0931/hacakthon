@@ -35,6 +35,7 @@ function Item(props) {
 // To add or edit the name/link for item, change it in the const items variable
 // If not indicator provided it is off or any other value, if indicator value = "on" discount tab will have a green indicator
 function Sidebar(props) {
+
   const items = [
     {name:"Dashboard", link:"#"},
     {name:"Marketing", link:"#"},
@@ -51,14 +52,16 @@ function Sidebar(props) {
 
   ]
   return (
-      <div>
-        <span className="absolute text-black text-4xl top-5 left-4 cursor-pointer">
-          <i className="bi bi-filter-left px-2 bg-white-900 rounded-md"></i>
-        </span>
-        <div className="sidebar fixed top-0 bottom-0 lg:left-0 p-2 w-[300px] overflow-y-auto text-center bg-white-900 border-r-2 border-solid">
+        <div className={`sidebar fixed top-0 bottom-0 lg:left-0 p-2 w-[300px] overflow-y-auto text-center bg-white border-r-2 border-solid z-40 ${props.isOpen ? 'visible' : 'hidden'}`}>
           <div className="text-black-100 text-xl">
-              <div className="p-3 flex items-start justify-start">
-              <Image src={logo} alt="Logo" width="auto" height={50}/>
+              <div className="p-3 flex items-start justify-between">
+              <Image src={logo} alt="Logo" width="auto" height={50} className="justify-start"/>
+              <button
+                onClick={() => props.setIsOpen(!props.isOpen)}
+                className="md:hidden p-2 bg-pink-500 text-white rounded justify-end"
+                >
+                {props.isOpen ? 'x' : ''}
+                </button>
               </div>
               <div className="my-2 bg-white-600 h-[1px]"></div>
           </div>
@@ -68,7 +71,6 @@ function Sidebar(props) {
           ))}
 
         </div>
-      </div>
     );
 }
 

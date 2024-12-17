@@ -7,6 +7,27 @@ import LaunchButton from '@/components/LaunchButton'
 import Header from '@/components/Header'
 
 export default function Discounts() {
+    const [isOpen, setIsOpen] = useState(false);
+
+    // Handle window resize
+    useEffect(() => {
+        const handleResize = () => {
+        if (window.innerWidth >= 768) {
+            setIsOpen(true); // Open sidebar on larger screens
+        } else {
+            setIsOpen(false); // Hide sidebar on smaller screens
+        }
+        };
+
+        // Add event listener on component mount
+        window.addEventListener('resize', handleResize);
+
+        // Run once initially to set correct state
+        handleResize();
+
+        // Cleanup listener on unmount
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // const [menuItem, setMenuItem] = useState({ 
     //     Username: "",
@@ -88,15 +109,22 @@ export default function Discounts() {
    
 
     return (
-    <div className="flex">
-        <Sidebar current="Discounts" indicator="on"/>
-        <div className="flex-1 lg:ml-[300px] p-10 overflow-y-auto">
+    <>
+        <Sidebar current="Discounts" indicator="on" isOpen={isOpen} setIsOpen={setIsOpen} className="z-100"/>
+        <div className="flex-1 md:ml-[300px] ml-[100px] p-10 overflow-y-auto">
+            {/* Main content area */}
+                <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="md:hidden p-2 bg-pink-500 text-white rounded"
+                >
+                {isOpen ? 'x' : '☰'}
+                </button>
             <Header name="Discount" indicator="on"/>
             <OperatingTime discountStatus={discountStatus} setDiscountStatus={setDiscountStatus} PostDiscountStatus={PostDiscountStatus}/>
             <Menu menuItems={menuItems}/>
             <LaunchButton discountStatus={discountStatus} setDiscountStatus={setDiscountStatus} PostDiscountStatus={PostDiscountStatus}/>
             
         </div>
-    </div>
+    </>
     )
 }
