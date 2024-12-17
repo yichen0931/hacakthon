@@ -34,10 +34,10 @@ func NewDBClient() *DBClient {
 func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, error) {
 	var vendorViews []models.VendorView
 
-	//query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
+	//query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, , m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
 
 	//this is only for testing purpose (need to make sure that DiscountStart, DiscountEnd is NOT NULL)
-	query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore, m.Price FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
+	query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore, m.Price FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
@@ -55,8 +55,8 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 		err := rows.Scan(
 			&vendorView.IsOpen,
 			&vendorView.IsDiscount,
-			//&vendorView.DiscountStart,
-			//&vendorView.DiscountEnd,
+			&vendorView.DiscountStart,
+			&vendorView.DiscountEnd,
 			//&discountStart,
 			//&discountEnd,
 			&vendorView.MealID,
