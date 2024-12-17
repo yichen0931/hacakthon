@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"hackathon/models"
 	"log"
@@ -145,4 +146,51 @@ func (db *DBClient) GetDiscountedMealsFromVendor(meals []models.Meal) ([]models.
 		}
 	}
 	return discountedMeals, nil
+}
+
+func (db *DBClient) MapMealIDAndMealName(discounts []models.Discount, vendorName string) ([]models.DiscountAndMealName, error) {
+	var finalResult []models.DiscountAndMealName
+	builder := models.DiscountAndMealName{}
+	for _, discount := range discounts {
+		builder.MealID = discount.MealID
+		builder.DiscountPrice = discount.DiscountPrice
+		builder.Quantity = discount.Quantity
+
+		//fetch meal name via meal id
+		dbString := fmt.Sprintf("SELECT MealName, Price FROM Meal WHERE MealID='%s'", discount.MealID)
+		result, err := db.DB.Query(dbString)
+		if err != nil {
+			fmt.Println("Error in MapMealIDAndMealName", err)
+			return nil, err
+		}
+
+		var mealname string
+		var mealprice float64
+		if result.Next() {
+			result.Scan(&mealname, &mealprice)
+			builder.MealName = mealname
+			builder.MealPrice = mealprice
+			builder.VendorName = vendorName
+			finalResult = append(finalResult, builder)
+		} else {
+			continue
+		}
+	}
+	return finalResult, nil
+}
+
+func (db *DBClient) FetchVendorName(vendorID string) (string, error) {
+	dbString := fmt.Sprintf("SELECT VendorName FROM Vendor WHERE VendorID='%s'", vendorID)
+	result, err := db.DB.Query(dbString)
+	if err != nil {
+		return "", err
+	}
+
+	var vendorName string
+	if result.Next() {
+		result.Scan(&vendorName)
+		return vendorName, nil
+	} else {
+		return "", errors.New("Vendor name not found")
+	}
 }
