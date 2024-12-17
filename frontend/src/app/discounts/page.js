@@ -117,7 +117,7 @@ export default function Discounts() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="md:hidden p-2 bg-pink-500 text-white rounded"
                 >
-                {isOpen ? 'x' : '☰'}
+                {isOpen ? '' : '☰'}
                 </button>
             <Header name="Discount" indicator="on"/>
             <OperatingTime discountStatus={discountStatus} setDiscountStatus={setDiscountStatus} PostDiscountStatus={PostDiscountStatus}/>

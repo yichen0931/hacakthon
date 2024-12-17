@@ -23,12 +23,12 @@ function OperatingTime({discountStatus, setDiscountStatus, PostDiscountStatus}) 
         <>
         <h2 className="text-xl font-semibold p-3">Operating Time</h2>
         <div className="flex justify-center">
-        <div className="flex border-2 border-solid w-[99%] h-[50px] rounded-2xl items-center">
-            <form id="operating-time">
-                <span className="p-7">Start Time: </span>
-                <input type="time" className="w-[110px] border-b border-solid" value={discountStatus.StartTime} onChange={handleChange} name="StartTime" id="StartTime"/>
-                <span className="p-7">End Time: </span>
-                <input type="time" className="w-[110px] border-b border-solid" value={discountStatus.EndTime} onChange={handleChange} name="EndTime" id="EndTime"/>
+        <div className="flex border-2 border-solid w-[99%] rounded-2xl items-center">
+            <form id="operating-time" className='p-2'>
+                <span className="p-2">Start Time: </span>
+                <input type="time" className="w-[150px] border-b border-solid p-2" value={discountStatus.StartTime} onChange={handleChange} name="StartTime" id="StartTime"/>
+                <span className="p-2">End Time: </span>
+                <input type="time" className="w-[150px] border-b border-solid p-2" value={discountStatus.EndTime} onChange={handleChange} name="EndTime" id="EndTime"/>
             </form>
         </div>
         </div>
