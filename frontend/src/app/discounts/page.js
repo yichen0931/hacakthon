@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Menu from './components/Menu'
+import Menu from '@/components/Menu'
 import Sidebar from '@/components/Sidebar'
 import OperatingTime from '@/components/OperatingTime'
 import LaunchButton from '@/components/LaunchButton'

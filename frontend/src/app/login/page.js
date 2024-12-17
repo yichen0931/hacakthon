@@ -1,7 +1,7 @@
 "use client"
 import logo from '../../assets/foodpanda-app-icon-square.png';
 import Image from 'next/image';
-import Form from './components/Form';
+import Form from '@/components/Form';
 
 export default function Login(){
     return (
