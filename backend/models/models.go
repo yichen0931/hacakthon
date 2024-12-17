@@ -20,6 +20,7 @@ type Meal struct {
 	Price                     float64
 	Availability              bool
 	SustainabilityCreditScore int
+	VendorImage string
 }
 
 type Rider struct {
