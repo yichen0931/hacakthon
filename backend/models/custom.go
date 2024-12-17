@@ -19,3 +19,13 @@ type VendorLaunch struct {
 	Button         string     `json:"Button"`
 	IsDiscountOpen bool
 }
+
+// mus added
+type DiscountAndMealName struct {
+	MealID        string  `json:"MealID"`
+	DiscountPrice float64 `json:"DiscountPrice"`
+	Quantity      int     `json:"Quantity"`
+	MealName      string  `json:"MealName"`
+	MealPrice     float64 `json:"MealPrice"`
+	VendorName    string  `json:"VendorName"`
+}

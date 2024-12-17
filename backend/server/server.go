@@ -202,7 +202,7 @@ func (a *Apiserver) GetCustomerDiscountIndividual(res http.ResponseWriter, req *
 		}
 
 		//get only meals that are discounted
-		discountedMeals, dberr := a.DB.GetDiscountedMealsFromVendor(meals)
+		discountedMeals, dberr := a.DB.GetDiscountedMealsFromVendor(meals) //[]models.Discount
 		if dberr != nil {
 			fmt.Println(dberr)
 			res.WriteHeader(http.StatusNotFound)
@@ -210,7 +210,24 @@ func (a *Apiserver) GetCustomerDiscountIndividual(res http.ResponseWriter, req *
 			return
 		}
 
-		jsonerr := json.NewEncoder(res).Encode(discountedMeals) //json data returned
+		//fmt.Println(discountedMealsAndMealName)
+		vendorName, vendorerr := a.DB.FetchVendorName(vendorID)
+		if vendorerr != nil {
+			fmt.Println(vendorerr)
+			res.WriteHeader(http.StatusNotFound)
+			res.Write([]byte(`{"error": "No vendor found"}`))
+			return
+		}
+
+		discountedMealsAndMealName, dberr2 := a.DB.MapMealIDAndMealName(discountedMeals, vendorName) //DiscountAndMealName
+		if dberr2 != nil {
+			fmt.Println(dberr2)
+			res.WriteHeader(http.StatusNotFound)
+			res.Write([]byte(`{"error": "No discounted meals found and mapping"}`))
+			return
+		}
+
+		jsonerr := json.NewEncoder(res).Encode(discountedMealsAndMealName) //json data returned
 		if jsonerr != nil {
 			fmt.Println(jsonerr)
 			res.WriteHeader(http.StatusNotFound)
