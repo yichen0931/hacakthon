@@ -47,6 +47,8 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 	}
 
 	defer rows.Close()
+	var discountStart sql.NullTime
+	var discountEnd sql.NullTime
 	for rows.Next() {
 		fmt.Println("inside")
 		var vendorView models.VendorView
@@ -54,14 +56,23 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 		err := rows.Scan(
 			&vendorView.IsOpen,
 			&vendorView.IsDiscount,
-			&vendorView.DiscountStart,
-			&vendorView.DiscountEnd,
+			//&vendorView.DiscountStart,
+			//&vendorView.DiscountEnd,
+			&discountStart,
+			&discountEnd,
 			&vendorView.MealID,
 			&vendorView.MealName,
 			&vendorView.Description,
 			&vendorView.Availability,
 			&vendorView.SustainabilityCreditScore,
 		)
+
+		if !discountStart.Valid {
+			vendorView.DiscountStart = "0001-01-01 00:00:00"
+		}
+		if !discountEnd.Valid {
+			vendorView.DiscountEnd = "0001-01-01 00:00:00"
+		}
 		fmt.Println("vendor view", vendorView)
 		if err != nil {
 			log.Fatalln("Failed to scan row for vendor views", err.Error())
