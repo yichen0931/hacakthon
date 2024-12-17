@@ -42,7 +42,7 @@ export default function Customer() {
                 {}
                 {!loading && data && (
                     data.map((item) => {
-                        return(<VendorCard imgsrc={backgroundImage} name="Delifrance" startTime="09:00pm" endTime="9.30pm" address="123 Green Street" link="#"/>)
+                        return(<VendorCard key={item.VendorID} imgsrc={"/images/"+item.VendorImage} name="Delifrance" startTime="09:00pm" endTime="9.30pm" address="123 Green Street" link="#"/>)
                     })
                 )}
             </div>
