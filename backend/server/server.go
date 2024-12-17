@@ -149,7 +149,7 @@ func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) 
 	// get list of vendors
 	/* select * from Vendor where IsDiscountOpen = true OR (current_time() >= DiscountStart AND current_time() <= DiscountEnd); */
 
-	query := fmt.Sprintf("SELECT * FROM Vendor WHERE IsDiscountOpen = true OR (CURRENT_TIME() >= DiscountStart AND CURRENT_TIME() <= DiscountEnd)")
+	query := fmt.Sprintf("SELECT * FROM Vendor WHERE IsDiscountOpen = true OR (TIME(DATE_ADD(NOW(),INTERVAL 8 HOUR)) >= TIME(DiscountStart) AND TIME(DATE_ADD(NOW(),INTERVAL 8 HOUR)) <= TIME(DiscountEnd))")
 	rows, err := a.DB.DB.Query(query)
 	if err != nil {
 		http.Error(w, "Failed to fetch vendor discount details", http.StatusUnauthorized)
