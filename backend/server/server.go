@@ -140,7 +140,9 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 
 func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) {
 	// get list of vendors
-	query := fmt.Sprintf("SELECT * FROM Vendor WHERE IsDiscountOpen=1")
+	/* select * from Vendor where IsDiscountOpen = true OR (current_time() >= DiscountStart AND current_time() <= DiscountEnd); */
+
+	query := fmt.Sprintf("SELECT * FROM Vendor WHERE IsDiscountOpen = true OR (CURRENT_TIME() >= DiscountStart AND CURRENT_TIME() <= DiscountEnd)")
 	rows, err := a.DB.DB.Query(query)
 	if err != nil {
 		http.Error(w, "Failed to fetch vendor discount details", http.StatusUnauthorized)
@@ -175,7 +177,6 @@ func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
-	// SELECT * FROM VENDORS WHERE ISDISCOUNTOPEN=TRUE
 }
 
 func (a *Apiserver) GetCustomerDiscountIndividual(res http.ResponseWriter, req *http.Request) {
