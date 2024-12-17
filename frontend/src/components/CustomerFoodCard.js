@@ -4,27 +4,23 @@ import { useState, useEffect } from 'react';
 import backgroundImage from '../assets/square-food-image.jpg'
 
 
-const CustomerFoodCard = ({mealId, mealName, mealDiscountPrice, mealOriginalPrice, mealQuantity}) => {
-  const [quantity, setQuantity] = useState(0);
-  const increment = () => {
-    if (quantity < mealQuantity) {
-        setQuantity(quantity + 1); 
+const CustomerFoodCard = ({mealId, mealName, mealDiscountPrice, mealOriginalPrice, mealQuantity, onQuantityChange }) => {
+    const [quantity, setQuantity] = useState(0);
+    const increment = () => {
+        if (quantity < mealQuantity) {
+            const newQuantity = quantity + 1;
+            setQuantity(newQuantity);
+            onQuantityChange(mealId, newQuantity, mealDiscountPrice); 
+        }
     }
-  }
-  const decrement = () => {
-    if (quantity > 0) {
-      setQuantity(quantity - 1);
+    const decrement = () => {
+        if (quantity > 0) {
+            const newQuantity = quantity - 1;
+            setQuantity(newQuantity);
+            onQuantityChange(mealId, newQuantity, mealDiscountPrice); 
+        }
     }
-  }
 
-  const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value)) {
-      setQuantity(value);
-    } else {
-      setQuantity(0)
-    }
-  }
 
     // Handle Button Colour Change for Increment
     const incrementButtonStyle = {

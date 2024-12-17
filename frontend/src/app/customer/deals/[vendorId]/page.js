@@ -2,10 +2,75 @@
 import Image from "next/image";
 import backgroundImage from '../../../../assets/food-image.jpg'
 import CustomerFoodCard from "@/components/CustomerFoodCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function VendorPage({ params }) {
-    const [menuItems, setMenuItems] = useState([])
+    const [menuItems, setMenuItems] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
+    const router = useRouter();
+
+    // Function to handle updates from CustomerFoodCard
+    const handleQuantityUpdate = (mealId, quantity, discountedPrice) => {
+        setCartItems((prevCartItems) => {
+            const existingItemIndex = prevCartItems.findIndex((item) => item.mealId === mealId);
+            if (existingItemIndex !== -1) {
+                // Update existing item
+                const updatedItems = [...prevCartItems];
+                updatedItems[existingItemIndex] = { mealId, quantity, discountedPrice};
+                return updatedItems;
+            } else {
+                // Add new item
+                return [...prevCartItems, { mealId, quantity, discountedPrice}];
+            }
+        });
+    };
+
+    // Function to handle checkout
+    const newCartItems = useRef([])
+    const payment = async() => {
+        let total = 0;
+        for (let cartItem of cartItems) {
+            total += cartItem.quantity * cartItem.discountedPrice; 
+            newCartItems.current.push({
+                "ID": cartItem.mealId,
+                "Qty": cartItem.quantity,
+                "Price": cartItem.discountedPrice
+            })
+        }
+        const payload = {
+            "Total": total,
+            "DeliveryAddress": "foodpanda office",
+            "Meal": newCartItems
+        }; 
+        console.log(payload)
+
+        try {
+            const response = await fetch('http://localhost:5001/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload),
+                credentials: 'include',
+            });
+            const result = await response.json();
+            console.log(result)
+            
+            if (true) {
+                // Redirect or handle successful login
+                console.log("Checkout successful!")
+                router.push("/checkoutOngoing")
+            } else {
+                // Display error message if any
+                console.log(error)
+                alert("Please try again!")
+            }
+        } catch (error) {
+            console.log(error);
+            alert("Please try again!")
+        }
+    }
 
     // get all meal items for a restaurant
     useEffect(() => {
@@ -24,6 +89,24 @@ export default function VendorPage({ params }) {
         fetchMenuItems()
     }, [])
 
+    const checkoutStyle = {
+        position: 'fixed',
+        width: "100%",
+        bottom: '0px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontWeight: 'bold',
+        backgroundColor: '#C21760',
+        color: 'white',         
+        padding: '15px 30px',
+        fontSize: '18px',       
+        border: 'none',         
+        borderRadius: '5px',  
+        cursor: 'pointer',    
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+        zIndex: 1000,
+    };
+
     return (
         <div className="bg-white-100 dark:bg-white-800 py-8">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,9 +124,14 @@ export default function VendorPage({ params }) {
                         <div className="mb-4">
                             {menuItems.map((item) => {
                                 return (
-                                    <CustomerFoodCard key={item.MealID} mealId={item.MealID} mealName={item.MealName} mealDiscountPrice={item.DiscountPrice} mealOriginalPrice={item.MealPrice} mealQuantity={item.Quantity}/>
+                                    <CustomerFoodCard key={item.MealID} mealId={item.MealID} mealName={item.MealName} mealDiscountPrice={item.DiscountPrice} mealOriginalPrice={item.MealPrice} mealQuantity={item.Quantity} onQuantityChange={handleQuantityUpdate}/>
                                 )
                             })}
+                        </div>
+                        <div>
+                            <button style={checkoutStyle} onClick={payment}>
+                                Checkout
+                            </button>
                         </div>
                     </div>
                 </div>
