@@ -127,4 +127,18 @@ VALUES
     ('R002','Rider2','SHY3Y3Y', false),
     ('R003','Rider3','JYJ333',true);
 
+INSERT INTO Discount (MealID, DiscountedPrice, Quantity)
+VALUES
+    ('M001',0.0,0),
+    ('M002',0.0,0),
+    ('M003',0.0,0),
+    ('M004',0.0,0),
+    ('M005',0.0,0),
+    ('M006',0.0,0),
+    ('M007',0.0,0),
+    ('M008',0.0,0),
+    ('M009',0.0,0),
+    ('M010',0.0,0);
+
+
 
