@@ -53,23 +53,22 @@ func (a *Apiserver) Checkout(res http.ResponseWriter, req *http.Request) {
 				fmt.Println(okq)
 				return
 			}
-			// fetchMeals := checkoutDetails["Meal"].([]interface{})
-
 			for _, meal := range fetchMeals {
-				mealMap, ok := meal.(map[string]interface{})
+				mealMap, ok := meal.([]interface{})
 				if !ok {
 					fmt.Print("something wrong")
 					return
-				} else {
-					getMealID := mealMap["ID"].(string)
-					fmt.Print("print meal id", getMealID)
-					getMealQty := int(mealMap["Qty"].(float64)) //This is a common issue when dealing with JSON data in Go, since JSON numbers (even integers) are typically decoded as float64 in Go.
-					fmt.Print("print meal qty", getMealQty)
-					getMealPrice := mealMap["Price"].(float64)
-					fmt.Print("print meal price", getMealPrice)
+				}
+
+				for i, _ := range mealMap {
+					getMealID := mealMap[i].(map[string]interface{})["ID"].(string)
+					getMealQty := int(mealMap[i].(map[string]interface{})["Qty"].(float64))
+					getMealPrice := mealMap[i].(map[string]interface{})["Price"].(float64)
 					individualMeal := models.OrderDetail{OrderID: newOrderID, MealID: getMealID, MealQty: getMealQty, MealPrice: getMealPrice}
 					meals = append(meals, individualMeal)
+
 				}
+
 			}
 			//NEED TO update the discounts qty if order successfully pass thru.
 			//also need to check beforehand that qty fits whatever is left
