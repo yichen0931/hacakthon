@@ -19,7 +19,7 @@ function VendorCard(props) {
         // </a>
         <Link href={props.link}>
             <div className="w-[95%] m-auto my-2 border-solid border rounded-2xl">
-                <Image src={props.imgsrc} className="rounded-2xl w-[100%] h-[150px] object-cover"/>
+                <img src={props.imgsrc} className="rounded-2xl w-[100%] h-[150px] object-cover"/>
                 <div className="p-4">
                     <h2 className=" text-l font-bold">{props.name}</h2>
                     <p>{props.address}</p>

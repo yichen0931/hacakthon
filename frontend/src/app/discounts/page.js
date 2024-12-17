@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar'
 import OperatingTime from '@/components/OperatingTime'
 import LaunchButton from '@/components/LaunchButton'
 import Header from '@/components/Header'
+import moment from 'moment'
 
 var menuItems = [
     {
@@ -43,7 +44,7 @@ var menuItems = [
 
 export default function Discounts() {    
     const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
-    let indicator = ""
+    const [indicator, setIndicator] = useState("")
 
     // Handle window resize
     useEffect(() => {
@@ -89,17 +90,6 @@ export default function Discounts() {
         fetchDiscountStatus()
       }, [])
 
-    // change indicator variable to "on"
-    if (discountStatus.length != 0) {
-        try {
-            if (discountStatus[0].isDiscount) {
-                indicator="on"
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     const [postRequest, setPostRequest] = useState({
         DiscountStart:"",
         DiscountEnd:"",
@@ -108,12 +98,24 @@ export default function Discounts() {
     })
 
     useEffect(() => {
+        
         if (discountStatus.length != 0) {
+            let startTime = discountStatus[0].discountStart.slice(-8)
+            let endTime = discountStatus[0].discountEnd.slice(-8)
             setPostRequest((prevData) => ({
                 ...prevData,
-                DiscountStart: discountStatus[0].discountStart.slice(-8),
-                DiscountEnd: discountStatus[0].discountEnd.slice(-8),
+                DiscountStart: startTime,
+                DiscountEnd: endTime,
             }))
+            const nowTime = new Date(Date.now())
+            let startSeconds = stringToTimeInMiliseconds(startTime) 
+            let endSeconds = stringToTimeInMiliseconds(endTime)
+            let nowSeconds = nowTime.getHours() * 3600 + nowTime.getMinutes() * 60 + nowTime.getSeconds()
+            if (discountStatus[0].isDiscount || (nowSeconds < endSeconds && nowSeconds > startSeconds)) {
+                setIndicator("on")
+            } else {
+                setIndicator("")
+            }
         }
     },[discountStatus])
 
@@ -155,4 +157,11 @@ export default function Discounts() {
         </div>
     </>
     )
+}
+
+function stringToTimeInMiliseconds(time) {
+    const datevar = new Date("01-01-2000 "+time)
+    let seconds = datevar.getHours() * 3600 + datevar.getMinutes() * 60 + datevar.getSeconds()
+    return seconds
+
 }
