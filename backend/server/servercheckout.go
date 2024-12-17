@@ -70,6 +70,13 @@ func (a *Apiserver) Checkout(res http.ResponseWriter, req *http.Request) {
 				}
 
 			}
+			//fmt.Println(meals)
+			if len(meals) == 0 {
+				fmt.Println("Cannot insert no qty for all", err)
+				res.WriteHeader(http.StatusInternalServerError)
+				res.Write([]byte(`{"orderInserted": false, "OrderID": ""}`))
+				return
+			}
 			//NEED TO update the discounts qty if order successfully pass thru.
 			//also need to check beforehand that qty fits whatever is left
 
