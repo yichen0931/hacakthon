@@ -38,11 +38,11 @@ const MenuCard = ({mealId, mealName, mealPrice, postRequest, setPostRequest}) =>
   useEffect(() => {
     let mealArray = postRequest.Meals
     if (mealArray.some(meal => meal.MealID === mealId)) {
-      let id = meal.findIndex(meal => meal.MealID === mealId)
-      let updatedMeal = meal[id]
+      let id = mealArray.findIndex(meal => meal.MealID === mealId)
+      let updatedMeal = mealArray[id]
       updatedMeal.Quantity = quantity
       updatedMeal.DiscountedPrice = quantity
-      meal[id] = updatedMeal
+      mealArray[id] = updatedMeal
     } else {
       let newMeal = {
         MealID : mealId,

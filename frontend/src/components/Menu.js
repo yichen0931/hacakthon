@@ -1,6 +1,6 @@
 import MenuCard from './MenuCard.js'
 
-const Menu = ({menuItems, setPostRequest}) => {
+const Menu = ({menuItems, postRequest, setPostRequest}) => {
     return (
         <div className="w-full p-4">
             <h2 className="text-2xl font-bold mb-4">Menu</h2>
