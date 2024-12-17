@@ -29,63 +29,58 @@ export default function Discounts() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // const [menuItem, setMenuItem] = useState({ 
-    //     Username: "",
-    //     UserPassword: "",
-    //     Firstname: "",
-    //     Lastname: "",
-    // }) 
+    const [menuItem, setMenuItem] = useState([])
 
-    // // get all meal items for a restaurant
-    // useEffect(() => {
-    //     async function fetchMenuItems() {
-    //       const res = await fetch('http://localhost:5001/customer/discount/V001', {
-    //           method: 'GET',
-    //           credentials: 'include',
-    //           headers: {
-    //               'Content-Type': 'application/json'
-    //           },
-    //       })
-    //       const data = await res.json()
-    //       setMenuItem(data)
-    //     }
-    //     fetchMenuItems()
-    //   }, [])
+    // get all meal items for a restaurant
+    useEffect(() => {
+        const fetchMenuItems = async() => {
+        const res = await fetch('http://localhost:5001/vendor/discount', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        const data = await res.json()
+        setMenuItem(data)
+        }
+        fetchMenuItems()
+    }, [])
 
-    var menuItems = [
-        {
-            "MealID": "M007",
-            "MealName": "Chocolate Lava Cake",
-            "Description": "Molten chocolate dessert",
-            "Price": 6.5,
-            "Availability": 0,
-            "SustainabilityCreditScore": 55
-        },
-        {
-            "MealID": "M008",
-            "MealName": "Vanilla Ice Cream",
-            "Description": "Classic vanilla ice cream scoop",
-            "Price": 4,
-            "Availability": 1,
-            "SustainabilityCreditScore": 60
-        },
-        {
-            "MealID": "M009",
-            "MealName": "Apple Pie",
-            "Description": "Warm apple pie with cinnamon",
-            "Price": 5,
-            "Availability": 1,
-            "SustainabilityCreditScore": 50
-        },
-        {
-            "MealID": "M010",
-            "MealName": "Cheesecake",
-            "Description": "Creamy New York-style cheesecake",
-            "Price": 6,
-            "Availability": 1,
-            "SustainabilityCreditScore": 60
-        },
-    ]
+    // var menuItems = [
+    //     {
+    //         "MealID": "M007",
+    //         "MealName": "Chocolate Lava Cake",
+    //         "Description": "Molten chocolate dessert",
+    //         "Price": 6.5,
+    //         "Availability": 0,
+    //         "SustainabilityCreditScore": 55
+    //     },
+    //     {
+    //         "MealID": "M008",
+    //         "MealName": "Vanilla Ice Cream",
+    //         "Description": "Classic vanilla ice cream scoop",
+    //         "Price": 4,
+    //         "Availability": 1,
+    //         "SustainabilityCreditScore": 60
+    //     },
+    //     {
+    //         "MealID": "M009",
+    //         "MealName": "Apple Pie",
+    //         "Description": "Warm apple pie with cinnamon",
+    //         "Price": 5,
+    //         "Availability": 1,
+    //         "SustainabilityCreditScore": 50
+    //     },
+    //     {
+    //         "MealID": "M010",
+    //         "MealName": "Cheesecake",
+    //         "Description": "Creamy New York-style cheesecake",
+    //         "Price": 6,
+    //         "Availability": 1,
+    //         "SustainabilityCreditScore": 60
+    //     },
+    // ]
     
     const [discountStatus, setDiscountStatus] = useState({StartTime:"21:00",EndTime:"21:30",IsDiscount:false})
     const url = 'https://localhost:5001/vendor/discount/'
@@ -122,7 +117,7 @@ export default function Discounts() {
                 </button>
             <Header name="Discount" indicator="on"/>
             <OperatingTime discountStatus={discountStatus} setDiscountStatus={setDiscountStatus} PostDiscountStatus={PostDiscountStatus}/>
-            <Menu menuItems={menuItems}/>
+            <Menu menuItems={menuItem}/>
             <LaunchButton discountStatus={discountStatus} setDiscountStatus={setDiscountStatus} PostDiscountStatus={PostDiscountStatus}/>
             
         </div>
