@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type VendorView struct {
 	IsOpen                    bool   `json:"isOpen"`
 	IsDiscount                bool   `json:"isDiscount"`
@@ -15,8 +17,10 @@ type VendorView struct {
 type VendorLaunch struct {
 	Discount       []Discount `json:"Meals"`
 	DiscountStart  string     `json:"DiscountStart"`
-	DiscountEnd    string     `json:"DiscountEnd"`
-	Button         string     `json:"Button"`
+	StartTime      time.Time
+	DiscountEnd    string `json:"DiscountEnd"`
+	EndTime        time.Time
+	Button         string `json:"Button"`
 	IsDiscountOpen bool
 }
 

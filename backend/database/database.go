@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"hackathon/models"
 	"log"
-	"time"
 )
 
 type DBClient struct {
@@ -89,8 +88,8 @@ func (db *DBClient) VendorSetDiscount(vendorLaunch *models.VendorLaunch) (bool, 
 	}
 
 	// Build the update query based on whether the times were parsed successfully
-	timeValue := time.Now()
-	updateQuery := fmt.Sprintf("UPDATE Vendor SET IsDiscountOpen = %t, DiscountStart = '%v', DiscountEnd = '%v'", vendorLaunch.IsDiscountOpen, timeValue.Format(vendorLaunch.DiscountStart), timeValue.Format(vendorLaunch.DiscountEnd))
+	//timeValue := time.Now()
+	updateQuery := fmt.Sprintf("UPDATE Vendor SET IsDiscountOpen = %t, DiscountStart = '%s', DiscountEnd = '%s'", vendorLaunch.IsDiscountOpen, vendorLaunch.DiscountStart, vendorLaunch.DiscountEnd)
 	fmt.Println("update query", updateQuery)
 
 	// Execute the query with the appropriate parameters

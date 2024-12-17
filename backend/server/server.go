@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hackathon/database"
 	"hackathon/models"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -82,28 +83,46 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if vendorDiscount.DiscountStart == "00:00" {
-			vendorDiscount.DiscountStart = "0001-01-01 00:00:00"
+		const timeLayout = "15:04"
+		if _, err := time.Parse(timeLayout, vendorDiscount.DiscountStart); err != nil {
+			log.Fatalf("Invalid DiscountStart format: %v", err)
+		}
+		if _, err := time.Parse(timeLayout, vendorDiscount.DiscountEnd); err != nil {
+			log.Fatalf("Invalid DiscountEnd format: %v", err)
 		}
 
-		if vendorDiscount.DiscountEnd == "00:00" {
-			vendorDiscount.DiscountEnd = "0001-01-01 00:00:00"
-		}
+		//fmt.Println("this is time", fullDateTimeStart, fullDateTimeEnd)
+		//if vendorDiscount.DiscountStart == "00:00" {
+		//	vendorDiscount.DiscountStart = "0001-01-01 00:00:00"
+		//} else {
+		//	vendorDiscount.DiscountStart = slices.Concat(time.Now(), vendorDiscount.DiscountStart)
+		//}
+		//
+		//if vendorDiscount.DiscountEnd == "00:00" {
+		//	vendorDiscount.DiscountEnd = "0001-01-01 00:00:00"
+		//}
 
-		// Parse DiscountStart and DiscountEnd
-		const timeLayout = "2006-01-02 15:04:05"
-		fmt.Println("ewfaewsgfvsewd", vendorDiscount.DiscountStart)
-		start, err := time.Parse(timeLayout, vendorDiscount.DiscountStart)
+		const defaultDate = "0001-01-01"
+		fmt.Println("this is initial", vendorDiscount.DiscountStart, vendorDiscount.DiscountEnd)
+
+		fullDateTimeStart := defaultDate + " " + vendorDiscount.DiscountStart + ":00"
+		fullDateTimeEnd := defaultDate + " " + vendorDiscount.DiscountEnd + ":00"
+		fmt.Println("This is time:", fullDateTimeStart, fullDateTimeEnd)
+
+		const dateTimeLayout = "2006-01-02 15:04:05"
+		start, err := time.Parse(dateTimeLayout, fullDateTimeStart)
 		if err != nil {
 			http.Error(w, "Invalid DiscountStart format", http.StatusBadRequest)
 			return
 		}
+		vendorDiscount.DiscountStart = start.Format(dateTimeLayout)
 
-		end, err := time.Parse(timeLayout, vendorDiscount.DiscountEnd)
+		end, err := time.Parse(dateTimeLayout, fullDateTimeEnd)
 		if err != nil {
 			http.Error(w, "Invalid DiscountEnd format", http.StatusBadRequest)
 			return
 		}
+		vendorDiscount.DiscountEnd = end.Format(dateTimeLayout)
 
 		// Create Frontend struct
 		frontend := Frontend{
