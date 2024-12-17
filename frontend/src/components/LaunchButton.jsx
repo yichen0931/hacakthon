@@ -3,11 +3,10 @@ function LaunchButton({setPostRequest, sendPostRequest}) {
     const handleOnClick = () => {
         setPostRequest((prevData)=>({
             ...prevData,
-            IsDiscount:true,
+            Button:"Launch",
             DiscountStart: "00:00",
             DiscountEnd: "00:00",
         }))
-        sendPostRequest()
     }
 
     return(

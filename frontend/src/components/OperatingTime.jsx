@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 // Making operating time component
 // Properties : startTime, endTime
 // Parent page will get value from server and populate 
-function OperatingTime({ postRequest, setPostRequest, sendPostRequest}) {
+function OperatingTime({ postRequest, setPostRequest, sendPostRequest }) {
     let startTime, endTime = "00:00"
 
     try {
@@ -18,7 +18,15 @@ function OperatingTime({ postRequest, setPostRequest, sendPostRequest}) {
         const {name, value} = e.target
         setPostRequest((prevData) => ({
             ...prevData,
-            [name]: value
+            [name]: value,
+        }))
+    }
+
+    const handleClick = async (e) => {
+        e.preventDefault()
+        setPostRequest((prevData) => ({
+            ...prevData,
+            Button: "Schedule"
         }))
     }
 
@@ -32,6 +40,9 @@ function OperatingTime({ postRequest, setPostRequest, sendPostRequest}) {
                 <input type="time" className="w-[150px] border-b border-solid p-2" value={startTime} onChange={handleChange} name="DiscountStart" id="DiscountStart"/>
                 <span className="p-2">End Time: </span>
                 <input type="time" className="w-[150px] border-b border-solid p-2" value={endTime} onChange={handleChange} name="DiscountEnd" id="DiscountEnd"/>
+                    <button className="rounded-2xl bg-pink-500 text-white font-bold w-[100px] h-[30px] mx-20 hover:bg-pink-700" onClick={handleClick}>
+                       Schedule
+                    </button>
             </form>
         </div>
         </div>
