@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hackathon/database"
 	"hackathon/models"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -40,13 +41,12 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 	}
 	sessionID := cookie.Value
 
-	var vendorID string
-	err = a.DB.VendorCheckSession(sessionID)
-	if err != nil {
+	vendorID, err := a.DB.VendorCheckSession(sessionID)
+	if err != nil || vendorID == "" {
 		http.Error(w, "Invalid or expired session", http.StatusUnauthorized)
+		fmt.Println("error:", err, "vendorID:", vendorID)
 		return
 	}
-
 	//GET Method -- let the vendor see their “home” page (to edit which meal to go live for discount + quantity, etc)
 	if r.Method == http.MethodGet {
 		defer r.Body.Close()
@@ -83,28 +83,46 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if vendorDiscount.DiscountStart == "00:00" {
-			vendorDiscount.DiscountStart = "0001-01-01 00:00:00"
+		const timeLayout = "15:04"
+		if _, err := time.Parse(timeLayout, vendorDiscount.DiscountStart); err != nil {
+			log.Fatalf("Invalid DiscountStart format: %v", err)
+		}
+		if _, err := time.Parse(timeLayout, vendorDiscount.DiscountEnd); err != nil {
+			log.Fatalf("Invalid DiscountEnd format: %v", err)
 		}
 
-		if vendorDiscount.DiscountEnd == "00:00" {
-			vendorDiscount.DiscountEnd = "0001-01-01 00:00:00"
-		}
+		//fmt.Println("this is time", fullDateTimeStart, fullDateTimeEnd)
+		//if vendorDiscount.DiscountStart == "00:00" {
+		//	vendorDiscount.DiscountStart = "0001-01-01 00:00:00"
+		//} else {
+		//	vendorDiscount.DiscountStart = slices.Concat(time.Now(), vendorDiscount.DiscountStart)
+		//}
+		//
+		//if vendorDiscount.DiscountEnd == "00:00" {
+		//	vendorDiscount.DiscountEnd = "0001-01-01 00:00:00"
+		//}
 
-		// Parse DiscountStart and DiscountEnd
-		const timeLayout = "2006-01-02 15:04:05"
-		fmt.Println("ewfaewsgfvsewd", vendorDiscount.DiscountStart)
-		start, err := time.Parse(timeLayout, vendorDiscount.DiscountStart)
+		const defaultDate = "0001-01-01"
+		fmt.Println("this is initial", vendorDiscount.DiscountStart, vendorDiscount.DiscountEnd)
+
+		fullDateTimeStart := defaultDate + " " + vendorDiscount.DiscountStart + ":00"
+		fullDateTimeEnd := defaultDate + " " + vendorDiscount.DiscountEnd + ":00"
+		fmt.Println("This is time:", fullDateTimeStart, fullDateTimeEnd)
+
+		const dateTimeLayout = "2006-01-02 15:04:05"
+		start, err := time.Parse(dateTimeLayout, fullDateTimeStart)
 		if err != nil {
 			http.Error(w, "Invalid DiscountStart format", http.StatusBadRequest)
 			return
 		}
+		vendorDiscount.DiscountStart = start.Format(dateTimeLayout)
 
-		end, err := time.Parse(timeLayout, vendorDiscount.DiscountEnd)
+		end, err := time.Parse(dateTimeLayout, fullDateTimeEnd)
 		if err != nil {
 			http.Error(w, "Invalid DiscountEnd format", http.StatusBadRequest)
 			return
 		}
+		vendorDiscount.DiscountEnd = end.Format(dateTimeLayout)
 
 		// Create Frontend struct
 		frontend := Frontend{
@@ -140,7 +158,9 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 
 func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) {
 	// get list of vendors
-	query := fmt.Sprintf("SELECT * FROM Vendor WHERE IsDiscountOpen=1")
+	/* select * from Vendor where IsDiscountOpen = true OR (current_time() >= DiscountStart AND current_time() <= DiscountEnd); */
+
+	query := fmt.Sprintf("SELECT * FROM Vendor WHERE IsDiscountOpen = true OR (CURRENT_TIME() >= DiscountStart AND CURRENT_TIME() <= DiscountEnd)")
 	rows, err := a.DB.DB.Query(query)
 	if err != nil {
 		http.Error(w, "Failed to fetch vendor discount details", http.StatusUnauthorized)
@@ -175,7 +195,6 @@ func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
-	// SELECT * FROM VENDORS WHERE ISDISCOUNTOPEN=TRUE
 }
 
 func (a *Apiserver) GetCustomerDiscountIndividual(res http.ResponseWriter, req *http.Request) {

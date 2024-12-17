@@ -34,7 +34,7 @@ export default function Customer() {
 
     return (
         <div className="max-w-[430px] m-auto relative">
-            <ImageWithOverlay imgsrc={backgroundImage} text="Your last happy hour deals"/>
+            <ImageWithOverlay imgsrc={backgroundImage} text="Your Last Happy Hour Deals"/>
             <div className="overflow-y-auto">
                 {loading && <p>Loading...</p>}
                 {!loading && data && (

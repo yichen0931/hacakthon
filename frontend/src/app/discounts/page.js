@@ -64,8 +64,8 @@ export default function Discounts() {
     useEffect(() => {
         
         if (discountStatus.length != 0) {
-            let startTime = discountStatus[0].discountStart.slice(-8)
-            let endTime = discountStatus[0].discountEnd.slice(-8)
+            let startTime = discountStatus[0].discountStart.slice(-8,-3)
+            let endTime = discountStatus[0].discountEnd.slice(-8,-3)
             setPostRequest((prevData) => ({
                 ...prevData,
                 DiscountStart: startTime,
@@ -97,10 +97,17 @@ export default function Discounts() {
             if (!res.ok) {
                 throw new Error('Failed to send data')
             }
+            console.log(res)
         } catch (error) {
             console.error('Error:', error);
         }
     }
+
+    useEffect(() => {
+        if (postRequest.Button != "") {
+            sendPostRequest()
+        }
+    },[postRequest])
 
     return (
     <>
@@ -115,7 +122,7 @@ export default function Discounts() {
                 </button>
             <Header name="Discount" indicator={indicator}/>
             <OperatingTime postRequest={postRequest} setPostRequest={setPostRequest} sendPostRequest={sendPostRequest}/>
-            <Menu menuItems={discountStatus}/>
+            <Menu menuItems={discountStatus} postRequest={postRequest} setPostRequest={setPostRequest}/>
             <LaunchButton postRequest={postRequest} setPostRequest={setPostRequest} sendPostRequest={sendPostRequest}/>
             
         </div>

@@ -1,6 +1,6 @@
 import MenuCard from './MenuCard.js'
 
-const Menu = ({menuItems}) => {
+const Menu = ({menuItems, postRequest, setPostRequest}) => {
     return (
         <div className="w-full p-4">
             <h2 className="text-2xl font-bold mb-4">Menu</h2>
@@ -8,7 +8,7 @@ const Menu = ({menuItems}) => {
                 {menuItems.map((item) => {
                     if (item.availability == true) {
                         return (
-                            <MenuCard key={item.mealID} mealId={item.mealID} mealName={item.mealName} mealPrice={0} />
+                            <MenuCard key={item.mealID} mealId={item.mealID} mealName={item.mealName} mealPrice={0} postRequest={postRequest} setPostRequest={setPostRequest}/>
                         )
                     }
                 })}

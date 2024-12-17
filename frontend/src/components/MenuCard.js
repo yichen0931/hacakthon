@@ -2,8 +2,12 @@
 import Image from "next/image";
 import { useState, useEffect } from 'react';
 
-const MenuCard = ({mealId, mealName, mealPrice}) => {
+  
+
+
+const MenuCard = ({mealId, mealName, mealPrice, postRequest, setPostRequest}) => {
   const [quantity, setQuantity] = useState(0);
+  const [price,setPrice] = useState(mealPrice);
   const increment = () => {
     setQuantity(quantity + 1); 
   }
@@ -21,6 +25,37 @@ const MenuCard = ({mealId, mealName, mealPrice}) => {
       setQuantity(0)
     }
   }
+
+  const handlePriceChange = (e) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value)) {
+      setPrice(value);
+    } else {
+      setPrice(mealPrice)
+    }
+  }
+
+  useEffect(() => {
+    let mealArray = postRequest.Meals
+    if (mealArray.some(meal => meal.MealID === mealId)) {
+      let id = mealArray.findIndex(meal => meal.MealID === mealId)
+      let updatedMeal = mealArray[id]
+      updatedMeal.Quantity = quantity
+      updatedMeal.DiscountedPrice = quantity
+      mealArray[id] = updatedMeal
+    } else {
+      let newMeal = {
+        MealID : mealId,
+        DiscountedPrice: price, 
+        Quantity: quantity
+      }
+      mealArray.push(newMeal)
+    }
+    setPostRequest((prevData)=>({
+        ...prevData,
+        Meals:mealArray,
+    }))
+  },[quantity])
 
   return (
     <div>
@@ -58,6 +93,7 @@ const MenuCard = ({mealId, mealName, mealPrice}) => {
                       type="text"
                       placeholder="0.00"
                       className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+                      onChange={handlePriceChange}
                     />
                   </div>
                 </div>
