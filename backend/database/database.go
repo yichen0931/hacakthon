@@ -100,7 +100,7 @@ func (db *DBClient) GetMealFromVendor(vendorID string) ([]models.Meal, error) {
 
 	meal := models.Meal{}
 	for result.Next() {
-		dberr := result.Scan(&meal.MealID, &meal.VendorID, &meal.MealName, &meal.Description, &meal.Price, &meal.Availability, &meal.SustainabilityCreditScore)
+		dberr := result.Scan(&meal.MealID, &meal.VendorID, &meal.MealName, &meal.Description, &meal.Price, &meal.Availability, &meal.SustainabilityCreditScore, &meal.VendorImage)
 		if dberr != nil {
 			fmt.Println(dberr)
 			return nil, dberr
