@@ -62,49 +62,65 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	//POST Method -- INSERT the data back to DB once vendor has set which meal to be live for discount and the quantity
+	//POST Method (VendorSetDiscount) -- INSERT the data back to DB once vendor has set which meal to be live for discount and the quantity
+	//POST Method (VendorSetLaunch) -- UPDATE this is for updating the DiscountStart and DiscountEnd time for launch/end of discount
 	if r.Method == http.MethodPost {
 		defer r.Body.Close()
 
-		var updatedDiscounts []models.VendorSetDiscount
+		var vendorDiscount models.VendorLaunch
 
-		if r.Header.Get("Content-Type") == "application/json" { //Get data passed from client in form format
-			err := json.NewDecoder(r.Body).Decode(&updatedDiscounts)
+		//VendorSetDiscount
+		if r.Header.Get("Content-Type") != "application/json" { //Get data passed from client in form format
 			if err != nil {
-				fmt.Println("Error with json decoding of req body in login", err)
-				http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+				http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
 				return
 			}
-			for _, discount := range updatedDiscounts {
+
+			err := json.NewDecoder(r.Body).Decode(&vendorDiscount)
+			if err != nil {
+				http.Error(w, "Failed to decode vendor discount details", http.StatusUnauthorized)
+				http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+				return
+
+			}
+
+			for _, meal := range vendorDiscount.Discount {
 				// If MealID is empty, or DiscountedPrice or Quantity is invalid (<= 0),
 				// set them as "no discount"
-				if discount.MealID == "" || discount.DiscountedPrice < 0 || discount.Quantity < 0 {
+				if meal.MealID == "" {
 					http.Error(w, "Invalid or missing necessary fields", http.StatusBadRequest)
 					return
 				}
 
-				// If DiscountedPrice or Quantity is 0, consider it as no discount for that meal
-				if discount.DiscountedPrice == 0 || discount.Quantity == 0 {
-					discount.DiscountedPrice = 0
-					discount.Quantity = 0
-				}
-
-				//proceed to set the discount to the database.
-				err = a.DB.VendorSetDiscount(&discount)
-				if err != nil {
-					http.Error(w, "Failed to insert discount details", http.StatusInternalServerError)
-					return
+				// Skip meals with no discount
+				if meal.DiscountPrice == 0 || meal.Quantity == 0 {
+					fmt.Printf("MealID %s has no discount; skipping.\n", meal.MealID)
+					meal.DiscountPrice = 0
+					meal.Quantity = 0
+					continue
 				}
 			}
+		}
+		// Insert or process the discount for the meal
+		postResults, err := a.DB.VendorSetDiscount(&vendorDiscount)
+		if err != nil {
+			http.Error(w, "Failed to process discounts", http.StatusInternalServerError)
+			return
 
-			// Respond back to the client with success
-			w.Header().Set("Content-Type", "application/json")
-			response := map[string]string{"message": "Discount updated successfully"}
+		}
+		// Respond back to the client with success or failure
+		w.Header().Set("Content-Type", "application/json")
 
-			if err := json.NewEncoder(w).Encode(response); err != nil {
-				http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-				return
-			}
+		// Prepare the response
+		response := map[string]bool{
+			"success": postResults,
+		}
+
+		// Encode the response as JSON
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			fmt.Println("Failed to encode response:", err)
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
 		}
 	}
 }

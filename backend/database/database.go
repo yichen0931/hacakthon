@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hackathon/models"
 	"log"
+	"time"
 )
 
 type DBClient struct {
@@ -36,7 +37,7 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 	//query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = '%s'", vendorID)
 
 	//this is only for testing purpose (need to make sure that DiscountStart, DiscountEnd is NOT NULL)
-	query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName, m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = 'V002'")
+	query := fmt.Sprintf("SELECT v.IsOpen, v.IsDiscountOpen AS IsDiscount, v.DiscountStart, v.DiscountEnd, m.MealID, m.MealName,m.Price m.Description, m.Availability, m.SustainabilityCreditScore FROM Vendor v LEFT JOIN Meal m ON v.VendorID = m.VendorID WHERE v.VendorID = 'V002'")
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
@@ -56,6 +57,7 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 			&vendorView.DiscountEnd,
 			&vendorView.MealID,
 			&vendorView.MealName,
+			&vendorView.Price,
 			&vendorView.Description,
 			&vendorView.Availability,
 			&vendorView.SustainabilityCreditScore,
@@ -72,19 +74,32 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 }
 
 // Inserting the meals discounts/prices and quantity on Vendor side
-func (db *DBClient) VendorSetDiscount(updatedDiscount *models.VendorSetDiscount) error {
+// Updating the discount start time, end time which are ready for launch on the Vendor side
+func (db *DBClient) VendorSetDiscount(vendorLaunch *models.VendorLaunch) (bool, error) {
+	// Iterate over each discount
+	for _, discount := range vendorLaunch.Discount {
+		query := fmt.Sprintf("INSERT INTO Discount (MealID, DiscountedPrice, Quantity) VALUES ('%s', '%.2f', '%d')", discount.MealID, discount.DiscountPrice, discount.Quantity)
 
-	query := fmt.Sprintf("INSERT INTO Discount (MealID, DiscountedPrice, Quantity) VALUES ('%s', '%.2f', '%d')", updatedDiscount.MealID, updatedDiscount.DiscountedPrice, updatedDiscount.Quantity)
-
-	_, err := db.DB.Exec(query)
-	if err != nil {
-		log.Fatalf("Failed to insert Discounted meal item: %s", err.Error())
-		return err
+		_, err := db.DB.Exec(query)
+		if err != nil {
+			log.Fatalf("Failed to insert Discounted meal item: %s", err.Error())
+			return false, err
+		}
+		fmt.Printf("Successfully inserted discount for MealID %s\n", discount.MealID)
 	}
 
-	fmt.Println("Successfully inserted Discounted meal item")
-	return nil
+	// Build the update query based on whether the times were parsed successfully
+	timeValue := time.Now()
+	updateQuery := fmt.Sprintf("UPDATE Vendor SET IsDiscountOpen = '%t', DiscountStart = '%v', DiscountEnd = '%v'", vendorLaunch.IsDiscountOpen, timeValue.Format(vendorLaunch.DiscountStart), timeValue.Format(vendorLaunch.DiscountEnd))
 
+	// Execute the query with the appropriate parameters
+	_, err := db.DB.Exec(updateQuery)
+	if err != nil {
+		log.Fatalf("Failed to update Vendor Discount status: %s", err.Error())
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (db *DBClient) GetMealFromVendor(vendorID string) ([]models.Meal, error) {
