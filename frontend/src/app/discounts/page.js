@@ -106,6 +106,7 @@ export default function Discounts() {
     useEffect(() => {
         if (postRequest.Button != "") {
             sendPostRequest()
+            window.location.reload()
         }
     },[postRequest])
 
@@ -123,7 +124,7 @@ export default function Discounts() {
             <Header name="Discount" indicator={indicator}/>
             <OperatingTime postRequest={postRequest} setPostRequest={setPostRequest} sendPostRequest={sendPostRequest}/>
             <Menu menuItems={discountStatus} postRequest={postRequest} setPostRequest={setPostRequest}/>
-            <LaunchButton postRequest={postRequest} setPostRequest={setPostRequest} sendPostRequest={sendPostRequest}/>
+            <LaunchButton postRequest={postRequest} setPostRequest={setPostRequest} sendPostRequest={sendPostRequest} indicator={indicator}/>
             
         </div>
     </>
