@@ -45,7 +45,7 @@ const MenuCard = ({mealId, mealName, mealPrice, postRequest, setPostRequest}) =>
       // Safely create a new Meals array
       const updatedMeals = prevData.Meals.map((meal) =>
           meal.MealID === mealId
-              ? { ...meal, Quantity: quantity, DiscountedPrice: price }
+              ? { ...meal, Quantity: quantity, DiscountPrice: price }
               : meal
       );
 
@@ -58,7 +58,7 @@ const MenuCard = ({mealId, mealName, mealPrice, postRequest, setPostRequest}) =>
             ...updatedMeals,
             {
               MealID: mealId,
-              DiscountedPrice: price,
+              DiscountPrice: price,
               Quantity: quantity,
             },
           ];

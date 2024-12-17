@@ -91,17 +91,6 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 			log.Fatalf("Invalid DiscountEnd format: %v", err)
 		}
 
-		//fmt.Println("this is time", fullDateTimeStart, fullDateTimeEnd)
-		//if vendorDiscount.DiscountStart == "00:00" {
-		//	vendorDiscount.DiscountStart = "0001-01-01 00:00:00"
-		//} else {
-		//	vendorDiscount.DiscountStart = slices.Concat(time.Now(), vendorDiscount.DiscountStart)
-		//}
-		//
-		//if vendorDiscount.DiscountEnd == "00:00" {
-		//	vendorDiscount.DiscountEnd = "0001-01-01 00:00:00"
-		//}
-
 		const defaultDate = "0001-01-01"
 		fmt.Println("this is initial", vendorDiscount.DiscountStart, vendorDiscount.DiscountEnd)
 
