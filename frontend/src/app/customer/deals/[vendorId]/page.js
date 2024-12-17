@@ -117,22 +117,31 @@ export default function VendorPage({ params }) {
                         </div>
                     </div>
                     <div className="md:flex-1 px-4">
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 text-center">{menuItems[0]?.VendorName}</h2>
-                        <p className="deal-info text-center">
-                            deals open for limited time only, <span class="stocks">while stocks last</span>
-                        </p>
-                        <div className="mb-4">
-                            {menuItems.map((item) => {
-                                return (
-                                    <CustomerFoodCard key={item.MealID} mealId={item.MealID} mealName={item.MealName} mealDiscountPrice={item.DiscountPrice} mealOriginalPrice={item.MealPrice} mealQuantity={item.Quantity} onQuantityChange={handleQuantityUpdate}/>
-                                )
-                            })}
-                        </div>
-                        <div>
-                            <button style={checkoutStyle} onClick={payment}>
-                                Checkout
-                            </button>
-                        </div>
+                        {menuItems && menuItems.length > 0 ? (
+                            <>
+                                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 text-center">{menuItems[0]?.VendorName}</h2>
+                                <p className="deal-info text-center">
+                                    deals open for limited time only, <span class="stocks">while stocks last</span>
+                                </p>
+                                <div className="mb-4">
+                                    {menuItems.map((item) => {
+                                        return (
+                                            <CustomerFoodCard key={item.MealID} mealId={item.MealID} mealName={item.MealName} mealDiscountPrice={item.DiscountPrice} mealOriginalPrice={item.MealPrice} mealQuantity={item.Quantity} onQuantityChange={handleQuantityUpdate}/>
+                                        )
+                                    })}
+                                </div>
+                                <div>
+                                    <button style={checkoutStyle} onClick={payment}>
+                                        Checkout
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="text-center py-10">
+                                <h2 className="text-xl font-bold text-gray-800 stocks">No Deals Available</h2>
+                                <p className="text-gray-600">Please check back later!</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
