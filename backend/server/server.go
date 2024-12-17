@@ -111,8 +111,19 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) {
-
+	// get list of vendors
+	vendors, err := database.GetSQL(a.DB.DB, "Vendors")
+	if err != nil {
+		http.Error(w, "Failed to fetch vendor discount details", http.StatusUnauthorized)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(vendors); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
+
 func (a *Apiserver) GetCustomerDiscountIndividual(res http.ResponseWriter, req *http.Request) {
 	//check discount start and discount end. if discount has ended, then we delete that meal from the database.
 	if req.Method == http.MethodGet { //GET ALL Meals from Vendors

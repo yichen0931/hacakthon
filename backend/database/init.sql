@@ -35,7 +35,6 @@ CREATE TABLE Rider (
                        RiderName varchar(50) NOT NULL,
                        VehiclePlate varchar(50) NOT NULL,
                        Availability boolean NOT NULL DEFAULT FALSE
-                       Availability boolean NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE Customer (
@@ -54,12 +53,9 @@ CREATE TABLE Discount (
 );
 
 CREATE TABLE Orders (
-CREATE TABLE Orders (
                        OrderID varchar(50) NOT NULL PRIMARY KEY,
                        CustomerID varchar(50) NOT NULL,
                        RiderID varchar(50) NOT NULL,
-                       OrderStatus ENUM('CART','PENDING','ORDERRECEIVED','GROUPORDER','PREPARING','PICKED','DELIVERED'),
-                       OrderEnd datetime,
                        OrderStatus ENUM('CART','PENDING','ORDERRECEIVED','GROUPORDER','PREPARING','PICKED','DELIVERED'),
                        OrderEnd datetime,
                        Total float,

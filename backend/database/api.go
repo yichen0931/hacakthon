@@ -70,6 +70,31 @@ func scanRowsIntoStruct(rows *sql.Rows, result interface{}) error {
 	return nil
 }
 
+func convertStringToType(name string) interface{} {
+	switch name {
+	case "Vendor":
+		return &[]models.Vendor{}
+	case "Meal":
+		return &[]models.Meal{}
+	case "Rider":
+		return &[]models.Rider{}
+	case "Customer":
+		return &[]models.Customer{}
+	case "Discount":
+		return &[]models.Discount{}
+	case "Orders":
+		return &[]models.Orders{}
+	case "OrderDetail":
+		return &[]models.OrderDetail{}
+	case "CustomerSessions":
+		return &[]models.CustomerSessions{}
+	case "VendorSessions":
+		return &[]models.VendorSessions{}
+	default:
+		return nil
+	}
+}
+
 /* convert from sql to struct interface */
 func GetSQL(db *sql.DB, tableName string) (result interface{}, err error) {
 	query := fmt.Sprintf(" SELECT * FROM %s", tableName)
@@ -81,16 +106,12 @@ func GetSQL(db *sql.DB, tableName string) (result interface{}, err error) {
 	}
 	defer rows.Close()
 
-	switch tableName {
-	case "Vendor":
-		var vendors []models.Vendor
-		if err := scanRowsIntoStruct(rows, &vendors); err != nil {
-			log.Println("GetTable: Error scanning rows:", tableName, err)
-			return nil, err
-		}
-		result = vendors
-	default:
-		log.Println("GetTable: Invalid table:", tableName)
+	result = convertStringToType(tableName)
+	if result == nil {
+		fmt.Println("GetTable: Unknown table:", tableName)
+	}
+	if err := scanRowsIntoStruct(rows, result); err != nil {
+		log.Println("GetTable: Error scanning rows:", tableName, err)
 		return nil, err
 	}
 	return result, nil
@@ -98,34 +119,65 @@ func GetSQL(db *sql.DB, tableName string) (result interface{}, err error) {
 
 /* convert from struct interface to sql table */
 func PostSQL(db *sql.DB, tableName string, table interface{}) error {
-	// Get the type and value of the struct
 	t := reflect.TypeOf(table)
 	v := reflect.ValueOf(table)
+
 	if t.Kind() != reflect.Struct {
 		return fmt.Errorf("table must be a struct")
 	}
 
-	var fieldNames []string
+	var idNames []string
 	var placeholders []string
-	var fieldValues []interface{}
+	var idValues []interface{}
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
-		fieldNames = append(fieldNames, field.Name)
-		placeholders = append(placeholders, "?")
-		fieldValues = append(fieldValues, v.Field(i).Interface())
+		fieldName := field.Tag.Get("db")
+		if fieldName == "" {
+			fieldName = field.Name
+		}
+
+		if !v.Field(i).CanInterface() {
+			continue
+		}
+
+		fieldValue := v.Field(i).Interface()
+		idValues = append(idValues, fieldValue)
+		idNames = append(idNames, fieldName)
+
+		// Format the value for SQL
+		switch v.Field(i).Kind() {
+		case reflect.String:
+			placeholders = append(placeholders, fmt.Sprintf("'%s'", fieldValue))
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			placeholders = append(placeholders, fmt.Sprintf("%d", fieldValue))
+		case reflect.Bool:
+			placeholders = append(placeholders, fmt.Sprintf("%t", fieldValue))
+		case reflect.Float32, reflect.Float64:
+			placeholders = append(placeholders, fmt.Sprintf("%f", fieldValue))
+		default:
+			if fieldValue == nil {
+				placeholders = append(placeholders, "NULL")
+			} else {
+				placeholders = append(placeholders, fmt.Sprintf("'%v'", fieldValue))
+			}
+		}
+	}
+
+	if len(idNames) == 0 {
+		return fmt.Errorf("no fields available to insert into %s", tableName)
 	}
 
 	query := fmt.Sprintf(
 		"INSERT INTO %s (%s) VALUES (%s)",
 		tableName,
-		strings.Join(fieldNames, ", "),
+		strings.Join(idNames, ", "),
 		strings.Join(placeholders, ", "),
 	)
-	_, err := db.Exec(query, fieldValues...)
+	fmt.Println(query)
+	_, err := db.Exec(query)
 	if err != nil {
 		return fmt.Errorf("error executing query: %w", err)
 	}
-
 	return nil
 }
 

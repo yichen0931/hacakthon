@@ -8,6 +8,7 @@ type Vendor struct {
 	IsDiscountOpen bool
 	DiscountStart  string
 	DiscountEnd    string
+	Password       string
 }
 
 type Meal struct {
@@ -32,6 +33,7 @@ type Customer struct {
 	CustomerName                         string
 	Address                              string
 	AccumulatedSustainabilityCreditScore int
+	Password                             string
 }
 
 type Discount struct {
@@ -39,8 +41,6 @@ type Discount struct {
 	DiscountPrice float64
 	Quantity      int
 }
-
-type OrderStatus int
 
 //const (
 //	CART OrderStatus = iota
@@ -69,23 +69,14 @@ type OrderDetail struct {
 	MealPrice float64
 }
 
-type Sessions struct {
+type CustomerSessions struct {
 	SessionID     string
 	UserID        string
-	SessionExpiry int64
+	SessionExpiry string
 }
 
-type Role int
-
-const (
-	VENDOR Role = iota
-	CUSTOMER
-	RIDER
-)
-
-type Users struct {
-	UserID   string
-	UserName string
-	Password string
-	Role     Role
+type VendorSessions struct {
+	SessionID     string
+	UserID        string
+	SessionExpiry string
 }
