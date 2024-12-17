@@ -91,7 +91,7 @@ func (db *DBClient) VendorViewAllMeal(vendorID string) ([]models.VendorView, err
 func (db *DBClient) VendorSetDiscount(vendorLaunch *models.VendorLaunch) (bool, error) {
 	// Iterate over each discount
 	for _, discount := range vendorLaunch.Discount {
-		query := fmt.Sprintf("INSERT INTO Discount (MealID, DiscountedPrice, Quantity) VALUES ('%s', %v, %d)", discount.MealID, discount.DiscountPrice, discount.Quantity)
+		query := fmt.Sprintf("UPDATE Discount SET DiscountedPrice = %v, Quantity = %d WHERE MealID ='%s'", discount.DiscountPrice, discount.Quantity, discount.MealID)
 		fmt.Println(query)
 		_, err := db.DB.Exec(query)
 		if err != nil {

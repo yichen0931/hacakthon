@@ -74,8 +74,8 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
 			return
 		}
-		fmt.Println("print req body", r.Body)
 		err := json.NewDecoder(r.Body).Decode(&vendorDiscount)
+		fmt.Println("Decoded:", vendorDiscount.Discount)
 
 		if err != nil {
 			http.Error(w, "Failed to decode vendor discount details", http.StatusBadRequest)
@@ -92,7 +92,6 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 
 		// Parse DiscountStart and DiscountEnd
 		const timeLayout = "2006-01-02 15:04:05"
-		fmt.Println("ewfaewsgfvsewd", vendorDiscount.DiscountStart)
 		start, err := time.Parse(timeLayout, vendorDiscount.DiscountStart)
 		if err != nil {
 			http.Error(w, "Invalid DiscountStart format", http.StatusBadRequest)
@@ -104,6 +103,7 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid DiscountEnd format", http.StatusBadRequest)
 			return
 		}
+		fmt.Println("Vendor discount details: ", vendorDiscount)
 
 		// Create Frontend struct
 		frontend := Frontend{
@@ -112,13 +112,14 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 			end:    end,
 		}
 
-		fmt.Println("D BUTTON", frontend.button, vendorDiscount.Button)
-
 		// Handle the schedule button
 		vendor := &models.Vendor{} // Assume an existing Vendor struct
+		fmt.Println("handleScheduleButton")
 		vendor = handleScheduleButton(frontend, vendor)
-		//fmt.Println("vendor is discount", vendorDiscount.IsDiscountOpen)
 		vendorDiscount.IsDiscountOpen = vendor.IsDiscountOpen
+		fmt.Println("handleScheduleButton end")
+
+		fmt.Println("Updating Discount")
 		postResults, err := a.DB.VendorSetDiscount(&vendorDiscount)
 		if err != nil {
 			http.Error(w, "Failed to process discounts", http.StatusInternalServerError)

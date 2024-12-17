@@ -24,12 +24,9 @@ type Frontend struct {
 }
 
 func handleScheduleButton(frontend Frontend, vendor *models.Vendor) *models.Vendor {
-	fmt.Println("lawl", frontend.button, vendor)
 	switch frontend.button {
 	case "Launch":
-		fmt.Println("it launcehd", vendor.IsDiscountOpen)
 		vendor.IsDiscountOpen = true
-		fmt.Println("it checkue", vendor.IsDiscountOpen)
 
 	case "Schedule":
 		t := time.Now()
@@ -47,6 +44,5 @@ func handleScheduleButton(frontend Frontend, vendor *models.Vendor) *models.Vend
 	}
 	vendor.DiscountStart = ConvertTimeToString(frontend.start)
 	vendor.DiscountEnd = ConvertTimeToString(frontend.end)
-	fmt.Println(vendor)
 	return vendor
 }
