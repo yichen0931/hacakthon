@@ -2,8 +2,12 @@
 import Image from "next/image";
 import { useState, useEffect } from 'react';
 
-const MenuCard = ({mealId, mealName, mealPrice}) => {
+  
+
+
+const MenuCard = ({mealId, mealName, mealPrice, postRequest, setPostRequest}) => {
   const [quantity, setQuantity] = useState(0);
+  const [price,setPrice] = useState(mealPrice);
   const increment = () => {
     setQuantity(quantity + 1); 
   }
@@ -21,6 +25,28 @@ const MenuCard = ({mealId, mealName, mealPrice}) => {
       setQuantity(0)
     }
   }
+
+  useEffect(() => {
+    let mealArray = postRequest.Meals
+    if (mealArray.some(meal => meal.MealID === mealId)) {
+      let id = meal.findIndex(meal => meal.MealID === mealId)
+      let updatedMeal = meal[id]
+      updatedMeal.Quantity = quantity
+      updatedMeal.DiscountedPrice = quantity
+      meal[id] = updatedMeal
+    } else {
+      let newMeal = {
+        MealID : mealId,
+        DiscountedPrice: price, 
+        Quantity: quantity
+      }
+      mealArray.push(newMeal)
+    }
+    setPostRequest((prevData)=>({
+        ...prevData,
+        Meals:mealArray,
+    }))
+  },[quantity])
 
   return (
     <div>

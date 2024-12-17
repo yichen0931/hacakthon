@@ -157,7 +157,7 @@ export default function Discounts() {
                 </button>
             <Header name="Discount" indicator={indicator}/>
             <OperatingTime postRequest={postRequest} setPostRequest={setPostRequest} sendPostRequest={sendPostRequest}/>
-            <Menu menuItems={discountStatus}/>
+            <Menu menuItems={discountStatus} postRequest={postRequest} setPostRequest={setPostRequest}/>
             <LaunchButton postRequest={postRequest} setPostRequest={setPostRequest} sendPostRequest={sendPostRequest}/>
             
         </div>
