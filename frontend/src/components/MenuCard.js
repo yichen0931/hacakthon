@@ -32,7 +32,8 @@ const MenuCard = ({mealId, mealName, mealPrice}) => {
           <div className="justify-center max-lg:pb-12 max-lg:pt-12 sm:px-5 sm:py-4 ">
             <Image
               className="w-100 max-lg:max-w-100"
-              src="/menu-items/sample-image.jpg"
+              src={mealId != undefined ? "/images/"+mealId+".jpg" : "/images/sample-image.jpg"}
+              // "/images/M001.jpg"
               alt="food image"
               width={200}
               height={200}

@@ -8,7 +8,7 @@ const Menu = ({menuItems}) => {
                 {menuItems.map((item) => {
                     if (item.availability == true) {
                         return (
-                            <MenuCard key={item.mealID} mealName={item.mealName} mealPrice={0} />
+                            <MenuCard key={item.mealID} mealId={item.mealID} mealName={item.mealName} mealPrice={0} />
                         )
                     }
                 })}

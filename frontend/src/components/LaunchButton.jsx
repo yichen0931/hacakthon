@@ -1,11 +1,11 @@
 
-function LaunchButton({discountStatus, setDiscountStatus, PostDiscountStatus}) {
+function LaunchButton({setPostRequest, sendPostRequest}) {
     const handleOnClick = () => {
-        setDiscountStatus((prevData)=>({
+        setPostRequest((prevData)=>({
             ...prevData,
             ['IsDiscount']:true
         }))
-        PostDiscountStatus()
+        sendPostRequest()
     }
 
     return(
