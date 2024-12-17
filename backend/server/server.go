@@ -112,16 +112,42 @@ func (a *Apiserver) VendorDiscount(w http.ResponseWriter, r *http.Request) {
 
 func (a *Apiserver) GetCustomerDiscount(w http.ResponseWriter, r *http.Request) {
 	// get list of vendors
-	vendors, err := database.GetSQL(a.DB.DB, "Vendor")
+	query := fmt.Sprintf("SELECT * FROM Vendor WHERE IsDiscountOpen=1")
+	rows, err := a.DB.DB.Query(query)
 	if err != nil {
 		http.Error(w, "Failed to fetch vendor discount details", http.StatusUnauthorized)
+		fmt.Println("Error fetching vendor discount details: ", err)
 		return
 	}
+	defer rows.Close()
+
+	fmt.Println(rows)
+	var result []models.Vendor
+	for rows.Next() {
+		var vendor models.Vendor
+		if err := rows.Scan(
+			&vendor.VendorID,
+			&vendor.VendorName,
+			&vendor.Address,
+			&vendor.IsOpen,
+			&vendor.IsDiscountOpen,
+			&vendor.DiscountStart,
+			&vendor.DiscountEnd,
+			&vendor.Password,
+			&vendor.VendorImage); err != nil {
+			http.Error(w, "Failed to fetch vendor discount details", http.StatusUnauthorized)
+			fmt.Println("Error fetching vendor discount details: ", err)
+			return
+		}
+		result = append(result, vendor)
+	}
+	fmt.Println(result)
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(vendors); err != nil {
+	if err := json.NewEncoder(w).Encode(result); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
+	// SELECT * FROM VENDORS WHERE ISDISCOUNTOPEN=TRUE
 }
 
 func (a *Apiserver) GetCustomerDiscountIndividual(res http.ResponseWriter, req *http.Request) {

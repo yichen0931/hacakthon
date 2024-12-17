@@ -9,6 +9,7 @@ type Vendor struct {
 	DiscountStart  string
 	DiscountEnd    string
 	Password       string
+	VendorImage    string
 }
 
 type Meal struct {
