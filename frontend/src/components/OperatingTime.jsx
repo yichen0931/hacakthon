@@ -3,52 +3,36 @@ import { useState, useEffect } from 'react'
 // Making operating time component
 // Properties : startTime, endTime
 // Parent page will get value from server and populate 
-function OperatingTime(props) {
-    const [formData, setFormData] = useState({StartTime:props.startTime,EndTime:props.endTime})
+function OperatingTime({discountStatus, setDiscountStatus, PostDiscountStatus}) {
     let posturl = 'https://localhost:5001/vendor/discount/'
 
     // update formData state when there is a change in form data
     const handleChange = (e) => {
         const {name, value} = e.target
-        setFormData((prevData) => ({
+        setDiscountStatus((prevData) => ({
             ...prevData,
             [name]: value
         }))
     }
 
-    async function PostTime() {
-        console.log(JSON.stringify(formData))
-        try {
-            const res = await fetch(posturl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData),
-            })
-            if (!res.ok) {
-                throw new Error('Failed to send data')
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
     useEffect(() => {
-        PostTime()
-    },[formData])
+        PostDiscountStatus()
+    },[discountStatus])
 
     return (
         <>
         <h2 className="text-xl font-semibold p-3">Operating Time</h2>
-        <div className="flex border-2 border-solid w-[80%] h-[50px] rounded-2xl items-center">
+        <div className="flex justify-center">
+        <div className="flex border-2 border-solid w-[99%] h-[50px] rounded-2xl items-center">
             <form id="operating-time">
                 <span className="p-7">Start Time: </span>
-                <input type="time" className="w-[110px] border-b border-solid" value={formData.StartTime} onChange={handleChange} name="StartTime" id="StartTime"/>
+                <input type="time" className="w-[110px] border-b border-solid" value={discountStatus.StartTime} onChange={handleChange} name="StartTime" id="StartTime"/>
                 <span className="p-7">End Time: </span>
-                <input type="time" className="w-[110px] border-b border-solid" value={formData.EndTime} onChange={handleChange} name="EndTime" id="EndTime"/>
+                <input type="time" className="w-[110px] border-b border-solid" value={discountStatus.EndTime} onChange={handleChange} name="EndTime" id="EndTime"/>
             </form>
         </div>
+        </div>
+
         </>
     )
 }

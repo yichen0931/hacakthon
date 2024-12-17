@@ -66,15 +66,35 @@ export default function Discounts() {
         },
     ]
     
+    const [discountStatus, setDiscountStatus] = useState({StartTime:"21:00",EndTime:"21:30",IsDiscount:false})
+
+    async function PostDiscountStatus() {
+        console.log(JSON.stringify(discountStatus))
+        try {
+            const res = await fetch(posturl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(discountStatus),
+            })
+            if (!res.ok) {
+                throw new Error('Failed to send data')
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+   
 
     return (
     <div className="flex">
         <Sidebar current="Discounts" indicator="on"/>
         <div className="flex-1 lg:ml-[300px] p-10 overflow-y-auto">
             <Header name="Discount" indicator="on"/>
-            <OperatingTime startTime="21:00" endTime="21:30"/>
+            <OperatingTime discountStatus={discountStatus} setDiscountStatus={setDiscountStatus} PostDiscountStatus={PostDiscountStatus}/>
             <Menu menuItems={menuItems}/>
-            <LaunchButton/>
+            <LaunchButton discountStatus={discountStatus} setDiscountStatus={setDiscountStatus} PostDiscountStatus={PostDiscountStatus}/>
             
         </div>
     </div>
