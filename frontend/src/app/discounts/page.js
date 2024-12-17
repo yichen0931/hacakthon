@@ -88,11 +88,12 @@ export default function Discounts() {
     ]
     
     const [discountStatus, setDiscountStatus] = useState({StartTime:"21:00",EndTime:"21:30",IsDiscount:false})
+    const url = 'https://localhost:5001/vendor/discount/'
 
     async function PostDiscountStatus() {
         console.log(JSON.stringify(discountStatus))
         try {
-            const res = await fetch(posturl, {
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
