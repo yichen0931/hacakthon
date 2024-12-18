@@ -93,9 +93,9 @@ CREATE TABLE VendorSessions (
 -- Insert dummy data into the Vendor table
 INSERT INTO Vendor (VendorID, VendorName, Address, IsOpen, IsDiscountOpen, DiscountStart, DiscountEnd, Password, VendorImage)
 VALUES
-    ('V001', 'Healthy Bites', '123 Green Street', TRUE, FALSE, NULL, NULL, 'password123', 'V001.jpg'),
+    ('V001', 'Healthy Bites', '123 Green Street', TRUE, FALSE, '0001-01-01 00:00:00', '0001-01-01 00:00:00', 'password123', 'V001.jpg'),
     ('V002', 'Spice Paradise', '456 Flavor Ave', TRUE, TRUE, '2024-12-20 10:00:00', '2024-12-20 18:00:00','password123', 'V002.jpg'),
-    ('V003', 'Dessert Haven', '789 Sweet Lane', FALSE, FALSE, NULL, NULL,'password123','V003.jpg');
+    ('V003', 'Dessert Haven', '789 Sweet Lane', FALSE, FALSE, '0001-01-01 00:00:00', '0001-01-01 00:00:00','password123','V003.jpg');
 
 -- Insert dummy data into the Meal table for each vendor
 INSERT INTO Meal (MealID, VendorID, MealName, Description, Price, Availability, SustainabilityCreditScore, MealImage)
