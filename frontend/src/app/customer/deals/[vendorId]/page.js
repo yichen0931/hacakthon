@@ -9,6 +9,7 @@ export default function VendorPage({ params }) {
     const [menuItems, setMenuItems] = useState([]);
     const [cartItems, setCartItems] = useState([]);
     const router = useRouter();
+    const vendorId = params.vendorId
 
     // Function to handle updates from CustomerFoodCard
     const handleQuantityUpdate = (mealId, quantity, discountedPrice) => {
@@ -113,7 +114,7 @@ export default function VendorPage({ params }) {
                 <div className="flex flex-col md:flex-row -mx-4">
                     <div className="md:flex-1 px-4">
                         <div className="w-20% h-10% rounded-lg bg-gray-300 dark:bg-gray-700 mb-4">
-                            <Image className="w-20% h-20% object-fit" src={backgroundImage} alt="Product Image"/>
+                            <Image className="w-20% h-20% object-fit" src={"/images/"+vendorId+".jpg"} alt="Restaurant Image" width={400} height={400}/>
                         </div>
                     </div>
                     <div className="md:flex-1 px-4">
